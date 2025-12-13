@@ -1,0 +1,90 @@
+
+:root {
+    /* Primary palette */
+    --tm-color-black: #1a1a1a;
+    --tm-color-blue: #2980b9;
+    --tm-color-grey: #666;
+    --tm-color-red:  #c0392b;
+
+    /* Property-specific colors */
+    --tm-color-border: #e8e8e8;
+}
+
+/* Base styles */
+body {
+    font-family: Georgia, serif;
+    max-width: 40rem;
+    margin: 0 auto;
+    padding: 1.5rem;
+    line-height: 1.6;
+    color: var(--tm-color-black);
+}
+
+/* Headings */
+h1 {
+    font-size: 1.8rem;
+    font-weight: 400;
+    margin: 1.5em 0 0.5em;
+    line-height: 1.2;
+}
+
+h2 {
+    font-size: 1.3em;
+    font-weight: 400;
+    margin: 1.2em 0 0.5em;
+}
+
+/* Links */
+a {
+    color: inherit;
+    text-decoration: underline;
+}
+
+a:hover {
+    color: var(--tm-color-blue);
+}
+
+/* Lists */
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 1em 0;
+}
+
+li {
+    margin: 0.8em 0;
+    padding: 0.5em 0;
+    border-bottom: 1px solid var(--tm-color-border);
+}
+
+li:last-child {
+    border-bottom: none;
+}
+
+/* Supporting text - sans serif */
+.meta {
+    font-family: system-ui, -apple-system, sans-serif;
+    font-size: 0.85em;
+    color: var(--tm-color-grey);
+}
+
+/* Informative highlights */
+.highlight {
+    color: var(--tm-color-blue);
+}
+
+/* Corrections (for future use) */
+.error {
+    color: var(--tm-color-red);
+}
+
+/* Mobile adjustments */
+@media (max-width: 600px) {
+    body {
+        padding: 1rem;
+    }
+    
+    h1 {
+        font-size: 1.5em;
+    }
+}

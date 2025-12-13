@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#2980b9">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="stylesheet" href="/css/style.css">
+    <title>Telemaque</title>
+  </head>
+
+  <body>
+    <h1>Telemaque</h1>
+    <p class="meta">Status:
+      <span id="status">Loading
+      </span>
+    </p>
+
+    <section id="source-texts">
+      <h1>Select a text</h1>
+      <!-- Show list of existing source texts here -->
+      <ul>
+        <!-- Or add one -->
+        <li>Add new text</li>
+      </ul>
+      
+    </section>
+      
+    <script>
+      // Register service worker
+      (async (service_worker) => {
+          if(service_worker === undefined) {
+              return;
+          }
+          try {
+              const $status = document.getElementById("status")
+              const registration = await service_worker.register("/sw.js")
+              console.log({
+                  event: "Index.REGISTER",
+                  registration,
+              })
+              $status.textContent = "Installed";
+              $status.classList.add("highlight");
+          }
+          catch(err) {
+              console.error({
+                  event: "Index.REGISTER",
+                  err,
+              });
+              $status.textContent = "Not installed";
+              $status.classList.remove("highlight");
+          }
+      })(navigator.serviceWorker);
+    </script>
+  </body>
+</html>
