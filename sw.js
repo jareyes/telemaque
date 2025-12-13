@@ -4,6 +4,10 @@ const ASSETS = [
     "/index.html",
     "/manifest.json",
     "/css/style.css",
+    "/html/text-create.html",
+    "/html/text-detail.html",
+    "/html/text-update.html",
+    "/img/arrow-back.svg",
 ];
 
 async function cleanup(current_name) {
