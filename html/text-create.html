@@ -43,8 +43,16 @@
 
   <script type="module">
     import database from "../lib/database.js";
+    import createText from "../lib/text.js";
 
     const conn = await database.get();
-    console.log("Database loaded!");
+    const Text = createText(conn);
+
+    const text_id = Text.create({author: "Italo Calvino", title: "Marcovaldo", description: "Stories of life"});
+    console.log("text_id", text_id);
+    const text = Text.get(text_id);
+    console.log("text", text);
+    const texts = Text.list();
+    console.log("texts", texts);
   </script>
 </html>

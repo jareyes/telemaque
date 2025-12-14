@@ -8,6 +8,8 @@ const ASSETS = [
     "/html/text-detail.html",
     "/html/text-update.html",
     "/img/arrow-back.svg",
+    "/lib/database.js",
+    "/lib/text.js",
     "/vendor/sqlite-wasm-3510100/jswasm/sqlite3.mjs",
 ];
 
