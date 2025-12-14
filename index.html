@@ -18,19 +18,19 @@
       </p>
     </header>
 
-    <section id="source-texts">
+    <article>
       <h1>Select a text</h1>
-      <!-- Show list of existing source texts here -->
-      <ul>
-        <!-- Or add one -->
-        <li><a href="/html/text-create.html">Add new text</a></li>
+      <ul id="text-list">
       </ul>
-      
-    </section>
-      
-    <script>
+      <p>
+        <a href="/html/text-create.html">Add new text
+        </a>
+      </p>
+    </article>
+
+    <script type="module">
       // Register service worker
-      (async (service_worker) => {
+      async function register(service_worker) {
           if(service_worker === undefined) {
               return;
           }
@@ -52,7 +52,42 @@
               $status.textContent = "Not installed";
               $status.classList.remove("highlight");
           }
-      })(navigator.serviceWorker);
+      }
+
+      async function list_texts() {
+          const {default: database} = await import("/lib/database.js");
+          const {default: createText} = await import("/lib/text.js");
+
+          const conn = database.get();
+          const Text = createText(conn);
+
+          const texts = await Text.list();
+          const $list = document.getElementById("text-list");
+          for(const text of texts) {
+              const $link = document.createElement("a");
+              $link.href = `/html/text-detail?text_id=${text.text_id}`;
+              $link.textContent = text.title;
+
+                console.debug("Creating link:", {
+                    text_id: text.text_id,
+                    href: $link.href,
+                    fullHref: $link.getAttribute('href')
+                });
+
+              const $author = document.createElement("span")
+              $author.textContent = ` by ${text.author}`;
+              $author.classList.add("meta");
+
+              const $list_item = document.createElement("li");
+              $list_item.appendChild($link);
+              $list_item.appendChild($author);
+
+              $list.appendChild($list_item);
+          }
+      }
+
+      await register(navigator.serviceWorker);
+      await list_texts();
     </script>
   </body>
 </html>

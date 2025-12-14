@@ -42,8 +42,8 @@
   </body>
 
   <script type="module">
-    import database from "../lib/database.js";
-    import createText from "../lib/text.js";
+    import database from "/lib/database.js";
+    import createText from "/lib/text.js";
 
     const conn = database.get();
     const Text = createText(conn);
@@ -54,7 +54,11 @@
         const description = form_data.get("description")
 
         // Create the text
-        const text_id = await Text.create({title, author, description});
+        const text_id = await Text.create({
+            title,
+            author,
+            description,
+        });
         console.log({
             event: "TextCreate.CREATE",
             title,

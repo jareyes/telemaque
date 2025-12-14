@@ -1,14 +1,14 @@
 const CACHE_NAME = "telemaque-v1";
 const ASSETS = [
     "/",
-    "/index.html",
     "/manifest.json",
     "/css/style.css",
-    "/html/text-create.html",
-    "/html/text-detail.html",
-    "/html/text-update.html",
+    "/html/text-create",
+    "/html/text-detail",
+    "/html/text-update",
     "/img/arrow-back.svg",
     "/lib/database.js",
+    "/lib/database-worker.js",
     "/lib/text.js",
     "/vendor/sqlite-wasm-3510100/jswasm/sqlite3.mjs",
 ];

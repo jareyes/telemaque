@@ -19,34 +19,33 @@
       </nav>
     </header>
     <article>
-      <h1 id="text-title">Insert text title here</h1>
-      <h2 id="text-author">Insert text author here</h2>
+      <h1 id="text-title"></h1>
+      <h2 id="text-author"></h2>
       <p id="text-description">
-        This is for the description.
       </p>
     </article>
     <script type="module">
-      import database from "../lib/database.js";
-      import createText from "../lib/text.js";
+      console.log("Full URL:", window.location.href);
+console.log("Search string:", window.location.search);
+console.log("Query object:", new URLSearchParams(window.location.search));
+      import database from "/lib/database.js";
+      import createText from "/lib/text.js";
 
       const conn = database.get();
       const Text = createText(conn);
 
       async function load_text(text_id) {
-          console.log("text-detail", "text_id", text_id);
           if(text_id === undefined) {
+              return console.log("no text_id");
               // Nothing to see here. Go home
-              //              return window.location.href = "/";
-              console.log("text-detail", "no text_id");
-              return
+              //return window.location.href = "/";
           }
           
           const text = await Text.get(text_id);
-          console.log("text-detail text", text);
           if(text === null) {
+              return console.log("no text", "text_id", text_id);
               // Nothing to see here. Go home
-              //              return window.location.href = "/";
-              return;
+              //return window.location.href = "/"; 
           }
           
           const $title = document.getElementById("text-title");
@@ -67,6 +66,7 @@
       }
       const query = new URLSearchParams(window.location.search);
       const text_id = query.get("text_id");
+      console.log("query", query, "text_id", text_id);
       load_text(text_id);
     </script>
   </body>
