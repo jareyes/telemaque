@@ -33,7 +33,7 @@
 
         <div class="form-field">
           <label for="description">Description</label>
-          <input name="description" type="textarea">
+          <textarea name="description"></textarea>
         </div>
 
         <input type="submit" value="Add">
@@ -45,16 +45,16 @@
     import database from "../lib/database.js";
     import createText from "../lib/text.js";
 
-    const conn = await database.get();
+    const conn = database.get();
     const Text = createText(conn);
 
-    function create_text(form_data) {
+    async function create_text(form_data) {
         const title = form_data.get("title");
         const author = form_data.get("author");
         const description = form_data.get("description")
 
         // Create the text
-        const text_id = Text.create({title, author, description});
+        const text_id = await Text.create({title, author, description});
         console.log({
             event: "TextCreate.CREATE",
             title,
@@ -68,11 +68,12 @@
     
     // Get the form
     const $form = document.getElementById("form-text-create");
-    $form.addEventListener("submit", event => {
+    $form.addEventListener("submit", async (event) => {
         // Don't go to the server. Stay right here
         event.preventDefault();
         const form_data = new FormData($form);
-        create_text(form_data);
+        console.log("creating text", "form_data", form_data);
+        await create_text(form_data);
     });
   </script>
 </html>
