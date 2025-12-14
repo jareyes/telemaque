@@ -8,6 +8,7 @@ const ASSETS = [
     "/html/text-detail.html",
     "/html/text-update.html",
     "/img/arrow-back.svg",
+    "/vendor/sqlite-wasm-3510100/jswasm/sqlite3.mjs",
 ];
 
 async function cleanup(current_name) {
@@ -32,19 +33,21 @@ async function cleanup(current_name) {
     }
 }
 
-// Intercept network calls. Try local storage first
-// Then go out on the wire
+// Intercept network calls. 
 async function fetch_strategy(request) {
+    // Try local storage first
     const cached_response = await caches.match(request);
-    console.debug({
-        event: "SW.FETCH",
-        request,
-        cached_response
-    });
-    if(cached_response !== undefined) {
+    if(cached_response !== undefined) {        
         return cached_response;
     }
-    return fetch(request);
+    // Then go out on the wire
+    const response = fetch(request);
+    console.debug({
+        event: "SW.FETCH",
+        url: request.url,
+        status_code: response.status,
+    });
+    return response;
 }
 
 async function precache(cache_name, assets) {

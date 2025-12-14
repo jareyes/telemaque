@@ -41,4 +41,10 @@
     </article>
   </body>
 
+  <script type="module">
+    import database from "../lib/database.js";
+
+    const conn = await database.get();
+    console.log("Database loaded!");
+  </script>
 </html>
