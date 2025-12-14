@@ -20,20 +20,20 @@
     </header>
     <article>
       <h1>Add a new text</h1>
-      <form>
-        <div class="form-field">
+      <form id="form-text-create">
+        <div class="form-field form-required">
           <label for="title">Title</label>
-          <input name="title" type="text">
+          <input required name="title" type="text">
         </div>
 
-        <div class="form-field">
+        <div class="form-field form-required">
           <label for="author">Author</label>
-          <input name="author" type="text">
+          <input required name="author" type="text">
         </div>
 
         <div class="form-field">
           <label for="description">Description</label>
-          <input name="description" type="text">
+          <input name="description" type="textarea">
         </div>
 
         <input type="submit" value="Add">
@@ -48,11 +48,31 @@
     const conn = await database.get();
     const Text = createText(conn);
 
-    const text_id = Text.create({author: "Italo Calvino", title: "Marcovaldo", description: "Stories of life"});
-    console.log("text_id", text_id);
-    const text = Text.get(text_id);
-    console.log("text", text);
-    const texts = Text.list();
-    console.log("texts", texts);
+    function create_text(form_data) {
+        const title = form_data.get("title");
+        const author = form_data.get("author");
+        const description = form_data.get("description")
+
+        // Create the text
+        const text_id = Text.create({title, author, description});
+        console.log({
+            event: "TextCreate.CREATE",
+            title,
+            author,
+            description,
+            text_id,
+        });
+        // Let's look at it on its own page
+        window.location.href=`/html/text-detail.html?text_id=${text_id}`;
+    }
+    
+    // Get the form
+    const $form = document.getElementById("form-text-create");
+    $form.addEventListener("submit", event => {
+        // Don't go to the server. Stay right here
+        event.preventDefault();
+        const form_data = new FormData($form);
+        create_text(form_data);
+    });
   </script>
 </html>
