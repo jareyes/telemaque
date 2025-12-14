@@ -19,11 +19,49 @@
       </nav>
     </header>
     <article>
-      <h1>Insert text title here</h1>
-      <h2>Insert text author here</h2>
-      <p>
+      <h1 id="text-title">Insert text title here</h1>
+      <h2 id="text-author">Insert text author here</h2>
+      <p id="text-description">
         This is for the description.
       </p>
     </article>
+    <script type="module">
+      import database from "../lib/database.js";
+      import createText from "../lib/text.js";
+
+      const conn = await database.get();
+      const Text = createText(conn);
+
+      (async (Text) => {
+          const query = new URLSearchParams(window.location.search);
+          const text_id = query.get("text_id");
+          if(text_id === undefined) {
+              // Nothing to see here. Go home
+              return window.location.href = "/";
+          }
+
+          const text = Text.get(text_id);
+          if(text === null) {
+              // Nothing to see here. Go home
+              return window.location.href = "/";
+          }
+
+          $title = document.getElementById("text-title");
+          $author = document.getElementById("text-author");
+          $description = document.getElementById("text-description");
+
+          $title.textContent = text.title;
+          $author.textContext = text.author;
+          $description.textContent = text.description;
+
+          // Make the page title pretty, too
+          document.title = `${text.title} | Telemaque`;
+
+          console.log({
+              event: "TextDetail.LOAD",
+              text,
+          });
+      })(Text);
+    </script>
   </body>
 </html>
