@@ -19,33 +19,34 @@
       </nav>
     </header>
     <article>
-      <h1 id="text-title"></h1>
-      <h2 id="text-author"></h2>
-      <p id="text-description">
+      <h1 id="text-title"><!-- Filled in --></h1>
+      <h2 id="text-author"><!-- Filled in --></h2>
+      <a id="sentence-link" href="#">Add sentence
+      </a>
+      <p id="text-description"><!-- Filled in -->
       </p>
     </article>
     <script type="module">
       console.log("Full URL:", window.location.href);
 console.log("Search string:", window.location.search);
 console.log("Query object:", new URLSearchParams(window.location.search));
-      import database from "/lib/database.js";
-      import createText from "/lib/text.js";
+      import database from "/js/database.js";
+      import createText from "/js/text.js";
+      import createSentence from "/js/sentence.js";
 
       const conn = database.get();
       const Text = createText(conn);
 
       async function load_text(text_id) {
           if(text_id === undefined) {
-              return console.log("no text_id");
               // Nothing to see here. Go home
-              //return window.location.href = "/";
+              return window.location.href = "/";
           }
           
           const text = await Text.get(text_id);
           if(text === null) {
-              return console.log("no text", "text_id", text_id);
               // Nothing to see here. Go home
-              //return window.location.href = "/"; 
+              return window.location.href = "/"; 
           }
           
           const $title = document.getElementById("text-title");
@@ -55,6 +56,9 @@ console.log("Query object:", new URLSearchParams(window.location.search));
           $title.textContent = text.title;
           $author.textContent = text.author;
           $description.textContent = text.description;
+
+          const $sentence_link = document.getElementById("sentence-link");
+          $sentence_link.href = `/html/sentence-create?text_id=${text_id}`;
           
           // Make the page title pretty, too
           document.title = `${text.title} | Telemaque`;
@@ -64,6 +68,10 @@ console.log("Query object:", new URLSearchParams(window.location.search));
               text,
           });
       }
+
+      async function load_sentence(text_id) {
+      }
+      
       const query = new URLSearchParams(window.location.search);
       const text_id = query.get("text_id");
       console.log("query", query, "text_id", text_id);

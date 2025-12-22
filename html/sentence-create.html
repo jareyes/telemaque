@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#2980b9">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="stylesheet" href="/css/style.css">
+    <title>Add Sentence | Telemaque</title>
+  </head>
+  
+  <body>
+    <header>
+      <h1>Telemaque</h1>
+      <nav>
+        <a class="nav-back" href="/">
+          <img src="/img/arrow-back.svg"> Back
+        </a>
+      </nav>
+    </header>
+    <article>
+      <h1 id="text-title"><!-- Filled in --></h1>
+      <h2 id="text-author"><!-- Filled in --></h2>
+
+      <section class="hidden" id="section-previous-sentence">
+        <h3>Previous sentence</h3>
+        <p id="sentence-previous"><!-- Filled in --></p>
+      </section>
+
+      <h3>New sentence</h3>
+      <form id="form-sentence">
+        <div class="form-field">
+          <label for="sentence">Original</label>
+          <input name="sentence" type="text">
+        </div>
+
+        <div class="form-field">
+          <label for="translation">Translation</label>
+          <input name="translation" type="text">
+        </div>
+
+        <div class="form-field">
+          <label for="note">Note</label>
+          <textarea name="note"></textarea>
+        </div>
+
+        <input type="submit" value="Add">
+      </form>
+    </article>
+    <script type="module">
+      import database from "/js/database.js";
+      import createText from "/js/text.js";
+      import createSentence from "/js/sentence.js";
+
+      const conn = database.get();
+      const Text = createText(conn);
+      const Sentence = createSentence(conn);
+
+      async function load_text(text_id) {
+          if(text_id === undefined) {
+              // Nothing to see here. Go home
+              return window.location.href = "/";
+          }
+          
+          const text = await Text.get(text_id);
+          if(text === null) {
+              // Nothing to see here. Go home
+              return window.location.href = "/"; 
+          }
+          
+          const $title = document.getElementById("text-title");
+          const $author = document.getElementById("text-author");
+          $title.textContent = text.title;
+          $author.textContent = text.author;
+      }
+
+      async function create_sentence(text_id, form_data) {
+          const position = await Text.sentence_count(text_id);
+          const sentence = form_data.get("sentence");
+          const translation = form_data.get("translation");
+          const note = form_data.get("note");
+          const tokens = Sentence.tokenize(sentence);
+
+          /*
+          const sentence_id = await Sentence.create({
+              text_id,
+              position,
+              translation,
+              note,
+          });
+          console.log({
+              event: "TextSentence.CREATE",
+              text_id,
+              sentence_id,
+              position,
+          });
+          
+          // Let's look at it on its own page
+          window.location.href=`/html/sentence-detail?sentence_id=${sentence_id}`;
+          */
+      }
+      
+      const query = new URLSearchParams(window.location.search);
+      const text_id = query.get("text_id");
+      // Load the text
+      load_text(text_id);
+
+      // Hook up the form
+      const $form = document.getElementById("form-sentence");
+      $form.addEventListener("submit", async (event) => {
+          // Don't go to the server. Stay right now
+          event.preventDefault();
+          const form_data = new FormData($form);
+          await create_sentence(text_id, form_data);
+      })
+    </script>
+  </body>
+</html>

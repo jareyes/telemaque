@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#2980b9">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="stylesheet" href="/css/style.css">
+    <title>Add Sentence | Telemaque</title>
+  </head>
+  
+  <body>
+    <header>
+      <h1>Telemaque</h1>
+      <nav>
+        <a id="link-back" href="/">
+          <img src="/img/arrow-back.svg"> Back
+        </a>
+      </nav>
+    </header>
+    <article>
+      <h1 id="text-title"><!-- Filled in --></h1>
+      <h2 id="text-author"><!-- Filled in --></h2>
+      <a class="hidden" id="link-sentence-previous" href="#">Previous</a>
+      <a class="hidden" id="link-sentence-next" href="#">Next</a>
+
+      <span class="meta">Sentence #<span id="sentence-position"><!-- Filled in -->
+        </span>
+      </span>
+
+      <div id="sentence-original"><!-- Filled in -->
+        TODO: Show the original sentence composed of words
+      </div>
+
+      <div class="hidden meta" id="sentence-translation"><!-- Filled in -->
+      </div>
+
+      <div class="hidden meta" id="sentence-note"><!-- Filled in -->
+      </div>
+    </article>
+    <script type="module">
+      import database from "/js/database.js";
+      import createText from "/js/text.js";
+      import createSentence from "/js/sentence.js";
+
+      const conn = database.get();
+      const Text = createText(conn);
+      const Sentence = createSentence(conn);
+
+      async function load_sentence(sentence_id) {
+          const sentence = await Sentence.get(sentence_id);
+          const text = await Text.get(sentence.text_id);
+
+          // Fill in the blanks
+          const $author = document.getElementById("text-author");
+          const $note = document.getElementById("sentence-note");
+          const $position = document.getElementById("sentence-position");
+          const $title = document.getElementById("text-title");
+          const $translation = document.getElementById("sentence-translation");
+
+          $author.textContent = text.author;
+          $title.textContent = text.title;
+          // We start counting at zero internally, but people don't
+          $position.textContent = sentence.position + 1;
+
+          if(sentence.translation?.length > 0) {
+              $translation.textContent = sentence.translation;
+              $translation.classList.remove("hidden");
+          }
+
+          if(sentence.note?.length > 0) {
+              $note.textContent = sentence.note;
+              $note.classList.remove("hidden");
+          }
+      }
+      const query = new URLSearchParams(window.location.search);
+      const sentence_id = query.get("sentence_id");
+      await load_sentence(sentence_id);
+    </script>
+  </body>
+</html>
+

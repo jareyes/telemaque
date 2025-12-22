@@ -1,4 +1,4 @@
-const WORKER_URL = "/lib/database-worker.js";
+const WORKER_URL = "/js/database-worker.js";
 
 // Global module state
 const WORKER = create_worker(WORKER_URL);

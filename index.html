@@ -55,8 +55,8 @@
       }
 
       async function list_texts() {
-          const {default: database} = await import("/lib/database.js");
-          const {default: createText} = await import("/lib/text.js");
+          const {default: database} = await import("/js/database.js");
+          const {default: createText} = await import("/js/text.js");
 
           const conn = database.get();
           const Text = createText(conn);

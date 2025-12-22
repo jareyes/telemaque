@@ -20,7 +20,7 @@
     </header>
     <article>
       <h1>Add a new text</h1>
-      <form id="form-text-create">
+      <form id="form-text">
         <div class="form-field form-required">
           <label for="title">Title</label>
           <input required name="title" type="text">
@@ -42,8 +42,8 @@
   </body>
 
   <script type="module">
-    import database from "/lib/database.js";
-    import createText from "/lib/text.js";
+    import database from "/js/database.js";
+    import createText from "/js/text.js";
 
     const conn = database.get();
     const Text = createText(conn);
@@ -67,16 +67,15 @@
             text_id,
         });
         // Let's look at it on its own page
-        window.location.href=`/html/text-detail.html?text_id=${text_id}`;
+        window.location.href=`/html/text-detail?text_id=${text_id}`;
     }
     
     // Get the form
-    const $form = document.getElementById("form-text-create");
+    const $form = document.getElementById("form-text");
     $form.addEventListener("submit", async (event) => {
         // Don't go to the server. Stay right here
         event.preventDefault();
         const form_data = new FormData($form);
-        console.log("creating text", "form_data", form_data);
         await create_text(form_data);
     });
   </script>

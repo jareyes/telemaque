@@ -7,9 +7,10 @@ const ASSETS = [
     "/html/text-detail",
     "/html/text-update",
     "/img/arrow-back.svg",
-    "/lib/database.js",
-    "/lib/database-worker.js",
-    "/lib/text.js",
+    "/js/database.js",
+    "/js/database-worker.js",
+    "/js/sentence.js",
+    "/js/text.js",
     "/vendor/sqlite-wasm-3510100/jswasm/sqlite3.mjs",
 ];
 
@@ -75,6 +76,7 @@ self.addEventListener("activate", event => {
 });
 
 // Handle network requests internally
-self.addEventListener("fetch", event => {
-    event.respondWith(fetch_strategy(event.request));
-});
+// TODO: Disabled for development. Put back
+// self.addEventListener("fetch", event => {
+//    event.respondWith(fetch_strategy(event.request));
+//});

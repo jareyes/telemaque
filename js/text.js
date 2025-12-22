@@ -14,10 +14,11 @@ class Text {
             bind: [title, author, description],
         });
         const rows = await this.conn.exec({
-            sql: "SELECT last_insert_rowid() as title_id",
+            sql: "SELECT last_insert_rowid() AS title_id",
             returnValue: "resultRows",
+            rowMode: "object",
         });
-        return rows[0][0];
+        return rows[0].title_id;
     }
     
     async get(text_id) {
@@ -27,7 +28,17 @@ class Text {
             returnValue: "resultRows",
             rowMode: "object",
         });
-        return rows[0] || null;
+        return rows[0] ?? null;
+    }
+
+    async sentence_count(text_id) {
+        const rows = await this.conn.exec({
+            sql: "SELECT COUNT(*) AS count FROM sentences WHERE text_id = ?",
+            bind: [text_id],
+            returnValue: "resultRows",
+            rowMode: "object",
+        });
+        return rows[0]?.count ?? null;
     }
     
     async list() {

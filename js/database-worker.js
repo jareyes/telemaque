@@ -11,7 +11,6 @@ console.log({
     event: "DatabaseWorker.CREATE",
 });
 
-
 // Add source texts table
  DATABASE.exec(
      `CREATE TABLE IF NOT EXISTS texts (
@@ -22,7 +21,43 @@ console.log({
          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
          updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
       )`
-    );
+ );
+
+DATABASE.exec(
+    `CREATE TABLE IF NOT EXISTS sentences (
+        sentence_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        text_id INTEGER NOT NULL,
+        position INTEGER NOT NULL,
+        translation TEXT,
+        note TEXT,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )`
+);
+
+DATABASE.exec(
+    `CREATE TABLE IF NOT EXISTS words (
+        word_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        word TEXT NOT NULL,
+        translation TEXT NOT NULL,
+        is_punctuation INTEGER DEFAULT 0,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+     -- Keep track of individual meanings
+     UNIQUE(original, translation)
+    )`
+);
+
+
+// Put words into sentences
+DATABASE.exec(
+    `CREATE TABLE IF NOT EXISTS sentence_words (
+        sentence_word_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        sentence_id INTEGER NOT NULL,
+        word_id INTEGER NOT NULL,
+        position INTEGER NOT NULL,
+        is_capitalized INTEGER DEFAULT 0
+    )`
+);
+*/
 console.log({event: "Database.CREATE_TABLES"});
 
 function act(action, options, db) {

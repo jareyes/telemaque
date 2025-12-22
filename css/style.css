@@ -61,6 +61,14 @@ li:last-child {
     border-bottom: none;
 }
 
+.hidden {
+    display: none;
+}
+
+.invisible {
+    visibility: hidden;
+}
+
 /* Supporting text - sans serif */
 .meta {
     font-family: system-ui, -apple-system, sans-serif;
