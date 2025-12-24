@@ -48,13 +48,8 @@
       </form>
     </article>
     <script type="module">
-      import database from "/js/database.js";
-      import createText from "/js/text.js";
-      import createSentence from "/js/sentence.js";
-
-      const conn = database.get();
-      const Text = createText(conn);
-      const Sentence = createSentence(conn);
+      import * as Text from "/js/text.mjs";
+      import * as Sentence from "/js/sentence.mjs";
 
       async function load_text(text_id) {
           if(text_id === undefined) {
@@ -80,8 +75,8 @@
           const translation = form_data.get("translation");
           const note = form_data.get("note");
           const tokens = Sentence.tokenize(sentence);
-
-          /*
+          console.log("tokens", tokens);
+      /*
           const sentence_id = await Sentence.create({
               text_id,
               position,
@@ -96,8 +91,8 @@
           });
           
           // Let's look at it on its own page
-          window.location.href=`/html/sentence-detail?sentence_id=${sentence_id}`;
-          */
+      window.location.href=`/html/sentence-detail?sentence_id=${sentence_id}`;
+      */
       }
       
       const query = new URLSearchParams(window.location.search);

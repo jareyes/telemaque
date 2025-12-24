@@ -1,4 +1,4 @@
-import * as sqlite from "/js/database.js"
+import * as sqlite from "/js/sqlite.mjs"
 
 const BOUNDARY_PATTERN = /(\s+|[.,;:!?"""''«»()—\-]+)/;
 

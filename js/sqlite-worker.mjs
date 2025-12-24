@@ -1,3 +1,4 @@
+import migrate from "/js/migrate.mjs";
 const {
     default: Sqlite3
 } = await import("/vendor/sqlite-wasm-3510100/jswasm/sqlite3.mjs");
@@ -12,54 +13,7 @@ const DATABASE = new sqlite.oo1.OpfsDb("/telemaque.db");
 console.log({
     event: "DatabaseWorker.CREATE",
 });
-
-// Add source texts table
- DATABASE.exec(
-     `CREATE TABLE IF NOT EXISTS texts (
-         text_id INTEGER PRIMARY KEY AUTOINCREMENT,
-         title TEXT NOT NULL,
-         author TEXT NOT NULL,
-         description TEXT,
-         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-      )`
- );
-
-DATABASE.exec(
-    `CREATE TABLE IF NOT EXISTS sentences (
-        sentence_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        text_id INTEGER NOT NULL,
-        position INTEGER NOT NULL,
-        translation TEXT,
-        note TEXT,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    )`
-);
-
-DATABASE.exec(
-    `CREATE TABLE IF NOT EXISTS words (
-        word_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        word TEXT NOT NULL,
-        translation TEXT NOT NULL,
-        is_punctuation INTEGER DEFAULT 0,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-     -- Keep track of individual meanings
-     UNIQUE(word, translation)
-    )`
-);
-
-
-// Put words into sentences
-DATABASE.exec(
-    `CREATE TABLE IF NOT EXISTS sentence_words (
-        sentence_word_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        sentence_id INTEGER NOT NULL,
-        word_id INTEGER NOT NULL,
-        position INTEGER NOT NULL,
-        is_capitalized INTEGER DEFAULT 0
-    )`
-);
-console.log({event: "Database.CREATE_TABLES"});
+migrate(DATABASE);
 
 function act(action, options, db) {
     switch(action) {

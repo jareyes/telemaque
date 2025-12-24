@@ -48,7 +48,7 @@
         const title = form_data.get("title");
         const author = form_data.get("author");
         const description = form_data.get("description")
-
+        console.log("title", title, "author", author, "description", description);
         // Create the text
         const text_id = await Text.create({
             title,
@@ -74,5 +74,6 @@
         const form_data = new FormData($form);
         await create_text(form_data);
     });
+    console.log("ready to form");
   </script>
 </html>

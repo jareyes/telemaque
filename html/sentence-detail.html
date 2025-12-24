@@ -39,13 +39,8 @@
       </div>
     </article>
     <script type="module">
-      import database from "/js/database.js";
-      import createText from "/js/text.js";
-      import createSentence from "/js/sentence.js";
-
-      const conn = database.get();
-      const Text = createText(conn);
-      const Sentence = createSentence(conn);
+      import * as Text from "/js/text.mjs";
+      import * as Sentence from "/js/sentence.mjs";
 
       async function load_sentence(sentence_id) {
           const sentence = await Sentence.get(sentence_id);

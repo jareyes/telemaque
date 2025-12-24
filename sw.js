@@ -7,10 +7,11 @@ const ASSETS = [
     "/html/text-detail",
     "/html/text-update",
     "/img/arrow-back.svg",
-    "/js/database.js",
-    "/js/database-worker.js",
-    "/js/sentence.js",
-    "/js/text.js",
+    "/js/migrate.mjs",
+    "/js/sqlite.mjs",
+    "/js/sqlite-worker.mjs",
+    "/js/sentence.mjs",
+    "/js/text.mjs",
     "/vendor/sqlite-wasm-3510100/jswasm/sqlite3.mjs",
 ];
 

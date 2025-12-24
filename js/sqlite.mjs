@@ -1,4 +1,4 @@
-const WORKER_URL = "/js/database-worker.js";
+const WORKER_URL = "/js/sqlite-worker.mjs";
 
 // Global module state
 const WORKER = create_worker(WORKER_URL);
