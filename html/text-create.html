@@ -42,11 +42,7 @@
   </body>
 
   <script type="module">
-    import database from "/js/database.js";
-    import createText from "/js/text.js";
-
-    const conn = database.get();
-    const Text = createText(conn);
+    import * as Text from "/js/text.mjs";
 
     async function create_text(form_data) {
         const title = form_data.get("title");

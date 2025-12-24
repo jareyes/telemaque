@@ -30,12 +30,8 @@
       console.log("Full URL:", window.location.href);
 console.log("Search string:", window.location.search);
 console.log("Query object:", new URLSearchParams(window.location.search));
-      import database from "/js/database.js";
-      import createText from "/js/text.js";
-      import createSentence from "/js/sentence.js";
-
-      const conn = database.get();
-      const Text = createText(conn);
+      import * as Text from "/js/text.mjs";
+      import * as Sentence from "/js/sentence.mjs";
 
       async function load_text(text_id) {
           if(text_id === undefined) {

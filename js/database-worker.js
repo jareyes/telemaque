@@ -1,4 +1,6 @@
-const {default: Sqlite3} = await import("/vendor/sqlite-wasm-3510100/jswasm/sqlite3.mjs");
+const {
+    default: Sqlite3
+} = await import("/vendor/sqlite-wasm-3510100/jswasm/sqlite3.mjs");
 const sqlite = await Sqlite3();
 
 console.log({
@@ -42,7 +44,7 @@ DATABASE.exec(
         is_punctuation INTEGER DEFAULT 0,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
      -- Keep track of individual meanings
-     UNIQUE(original, translation)
+     UNIQUE(word, translation)
     )`
 );
 
@@ -57,7 +59,6 @@ DATABASE.exec(
         is_capitalized INTEGER DEFAULT 0
     )`
 );
-*/
 console.log({event: "Database.CREATE_TABLES"});
 
 function act(action, options, db) {
@@ -69,7 +70,13 @@ function act(action, options, db) {
             db,
             options,
         });
-        return db.exec(options);
+        const {sql, parameters} = options;
+        return db.exec({
+            sql,
+            bind: parameters,
+            returnValue: "resultRows",
+            rowMode: "object",
+        });
     default:
         throw new Error(`Unknown action: ${action}`);
     }

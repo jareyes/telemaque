@@ -55,13 +55,9 @@
       }
 
       async function list_texts() {
-          const {default: database} = await import("/js/database.js");
-          const {default: createText} = await import("/js/text.js");
-
-          const conn = database.get();
-          const Text = createText(conn);
-
-          const texts = await Text.list();
+      const Text = await import("/js/text.mjs");
+      
+      const texts = await Text.list();
           const $list = document.getElementById("text-list");
           for(const text of texts) {
               const $link = document.createElement("a");
@@ -87,7 +83,9 @@
       }
 
       await register(navigator.serviceWorker);
+      console.log("registered");
       await list_texts();
+      console.log("listed");
     </script>
   </body>
 </html>

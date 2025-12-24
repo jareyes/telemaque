@@ -52,7 +52,7 @@ function create_worker(url) {
             return self.workerReadyResolve();
         }
         receive_message(event);
-    }
+    };
     worker.onmessageerror = console.error;
     return worker;
 }
@@ -85,12 +85,8 @@ async function send_message(
     });
 }
 
-function get() {
-    return {
-        exec: (options) => send_message("exec", {options})
-    };
+export function exec(options) {
+    return send_message("exec", {options});
 }
 
-export default {
-    get,
-}
+
