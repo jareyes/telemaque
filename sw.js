@@ -8,10 +8,11 @@ const ASSETS = [
     "/html/text-update",
     "/img/arrow-back.svg",
     "/js/migrate.mjs",
-    "/js/sqlite.mjs",
-    "/js/sqlite-worker.mjs",
     "/js/sentence.mjs",
+    "/js/sqlite-client.mjs",
+    "/js/sqlite-worker.mjs",
     "/js/text.mjs",
+    "/js/component/sentence-editor.mjs",
     "/vendor/sqlite-wasm-3510100/jswasm/sqlite3.mjs",
 ];
 

@@ -21,11 +21,11 @@ const MIGRATIONS = [
     `CREATE TABLE IF NOT EXISTS words (
         word_id INTEGER PRIMARY KEY AUTOINCREMENT,
         original TEXT NOT NULL,
-        translation TEXT NOT NULL,
+        translation TEXT,
         is_punctuation INTEGER DEFAULT 0,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
      -- Keep track of individual meanings
-     UNIQUE(word, translation)
+     UNIQUE(original, translation)
     )`,
     // Put words into sentences
     `CREATE TABLE IF NOT EXISTS sentence_words (
@@ -35,13 +35,10 @@ const MIGRATIONS = [
         position INTEGER NOT NULL,
         is_capitalized INTEGER DEFAULT 0
     )`,
-    // Allow for untranslated words
-    `ALTER TABLE words DROP COLUMN original`,
-    `ALTER TABLE words ADD COLUMN original TEXT`,    
 ];
 const CREATE_MIGRATION_TABLE = `
 CREATE TABLE IF NOT EXISTS migrations (
-  migration_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  migration_id INTEGER PRIMARY KEY,
   migration_date DATETIME DEFAULT CURRENT_TIMESTAMP
 )`;
 
@@ -79,7 +76,7 @@ export default function migrate(sqlite) {
                   VALUES (?)`,
             parameters: [migration_id],
         });
-        console.log({
+        console.debug({
             event: "Migrate.APPLIED",
             migration_id,
         });

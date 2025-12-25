@@ -7,6 +7,11 @@
     <link rel="manifest" href="/manifest.json">
     <link rel="stylesheet" href="/css/style.css">
     <title>Add Sentence | Telemaque</title>
+    <style>
+      .word {
+          margin: 0.15rem;
+      }
+    </style>
   </head>
   
   <body>
@@ -29,16 +34,13 @@
 
       <h3>New sentence</h3>
       <form id="form-sentence">
-        <div class="form-field">
-          <label for="sentence">Original</label>
-          <input name="sentence" type="text">
-        </div>
+        <div id="sentence-editor"></div>
 
         <div class="form-field">
           <label for="translation">Translation</label>
           <input name="translation" type="text">
         </div>
-
+        
         <div class="form-field">
           <label for="note">Note</label>
           <textarea name="note"></textarea>
@@ -49,7 +51,7 @@
     </article>
     <script type="module">
       import * as Text from "/js/text.mjs";
-      import * as Sentence from "/js/sentence.mjs";
+      import SentenceEditor from "/js/component/sentence-editor.mjs";
 
       async function load_text(text_id) {
           if(text_id === undefined) {
@@ -69,36 +71,14 @@
           $author.textContent = text.author;
       }
 
-      async function create_sentence(text_id, form_data) {
-          const position = await Text.sentence_count(text_id);
-          const sentence = form_data.get("sentence");
-          const translation = form_data.get("translation");
-          const note = form_data.get("note");
-          const tokens = Sentence.tokenize(sentence);
-          console.log("tokens", tokens);
-      /*
-          const sentence_id = await Sentence.create({
-              text_id,
-              position,
-              translation,
-              note,
-          });
-          console.log({
-              event: "TextSentence.CREATE",
-              text_id,
-              sentence_id,
-              position,
-          });
-          
-          // Let's look at it on its own page
-      window.location.href=`/html/sentence-detail?sentence_id=${sentence_id}`;
-      */
-      }
-      
       const query = new URLSearchParams(window.location.search);
       const text_id = query.get("text_id");
       // Load the text
       load_text(text_id);
+
+      // Add the editor
+      const $container = document.getElementById("sentence-editor");
+      const editor = new SentenceEditor(text_id, $container);
 
       // Hook up the form
       const $form = document.getElementById("form-sentence");
@@ -106,8 +86,12 @@
           // Don't go to the server. Stay right now
           event.preventDefault();
           const form_data = new FormData($form);
-          await create_sentence(text_id, form_data);
-      })
+          const translation = form_data.get("translation");
+          const note = form_data.get("note");
+          await editor.save(translation, note);
+          // Let's add another sentence
+          window.location.href = `/html/sentence-create?text_id=${text_id}`;
+      });
     </script>
   </body>
 </html>

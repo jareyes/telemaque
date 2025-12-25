@@ -1,6 +1,4 @@
-import * as sqlite from "/js/sqlite.mjs"
-
-const BOUNDARY_PATTERN = /(\s+|[.,;:!?"""''«»()—\-]+)/;
+import * as sqlite from "/js/sqlite-client.mjs";
 
 export async function create({
     text_id,
@@ -29,15 +27,16 @@ export async function get(sentence_id) {
 export async function get_words(sentence_id) {
     const rows = await sqlite.exec({
         sql: `SELECT
-                    w.word,
+                    w.original,
                     w.translation,
                     w.is_punctuation,
                     sw.is_capitalized,
-                    sw.position,
+                    sw.position
                   FROM sentence_words sw
                   JOIN words w
                     ON sw.word_id = w.word_id
-                  WHERE sw.sentence_id = ?`,
+                  WHERE sw.sentence_id = ?
+                  ORDER BY sw.position ASC`,
         parameters: [sentence_id],
     });
     return rows;
@@ -51,16 +50,25 @@ export async function list(text_id) {
     return rows;
 }
 
-export function tokenize(sentence) {
-    // Split on whitespace and punctuation
-    const tokens = sentence.split(BOUNDARY_PATTERN);
-    
-    // Filter out the whitespace
-    return tokens.filter(token =>
-        token.length > 0 && !/^\s+$/.test(token)
-    );
-}
-
-export function is_punctuation(token) {
-    return BOUNDARY_PATTERN.test(token);
+export async function place({
+    sentence_id,
+    word_id,
+    position,
+    is_capitalized,
+}) {
+    await sqlite.exec({
+        sql: `INSERT INTO sentence_words (
+                sentence_id,
+                word_id,
+                position,
+                is_capitalized
+              )
+              VALUES (?, ?, ?, ?)`,
+        parameters: [
+            sentence_id,
+            word_id,
+            position,
+            is_capitalized,
+        ],
+    });
 }

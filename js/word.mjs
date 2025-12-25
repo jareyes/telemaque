@@ -1,13 +1,30 @@
-import * as sqlite from "/js/sqlite.js"
+import * as sqlite from "/js/sqlite-client.mjs"
+
+export async function add({
+    original,
+    translation,
+    is_punctuation,
+}) {
+    // Look it up first
+    const rows = await sqlite.exec({
+        sql: `SELECT word_id FROM words
+              WHERE original = ? AND translation = ?`,
+        parameters: [original, translation],
+    });
+    if(rows.length > 0) {
+        return rows[0].word_id;
+    }
+    return create({original, translation, is_punctuation});
+}
 
 export async function create({
-    word,
+    original,
     translation,
     is_punctuation
 }) {
     await sqlite.exec({
         sql: "INSERT INTO words (original, translation, is_punctuation) VALUES (?, ?, ?)",
-        parameters: [word, translation, is_punctuation],
+        parameters: [original, translation, is_punctuation],
     });
 
     const rows = await sqlite.exec({

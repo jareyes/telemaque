@@ -29,7 +29,6 @@
       </span>
 
       <div id="sentence-original"><!-- Filled in -->
-        TODO: Show the original sentence composed of words
       </div>
 
       <div class="hidden meta" id="sentence-translation"><!-- Filled in -->
@@ -48,14 +47,21 @@
 
           // Fill in the blanks
           const $author = document.getElementById("text-author");
-          const $note = document.getElementById("sentence-note");
-          const $position = document.getElementById("sentence-position");
           const $title = document.getElementById("text-title");
-          const $translation = document.getElementById("sentence-translation");
-
           $author.textContent = text.author;
           $title.textContent = text.title;
-          // We start counting at zero internally, but people don't
+
+          const $position = document.getElementById("sentence-position");
+          const $original = document.getElementById("sentence-original");
+          const $translation = document.getElementById("sentence-translation");
+          const $note = document.getElementById("sentence-note");
+
+          const words = await Sentence.get_words(sentence_id);
+          const original = words.map(word => word.original).join(" ");
+          $original.textContent = original;
+
+          // We start counting at zero internally,
+          // but people don't
           $position.textContent = sentence.position + 1;
 
           if(sentence.translation?.length > 0) {

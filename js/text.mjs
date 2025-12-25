@@ -1,4 +1,4 @@
-import * as sqlite from "/js/sqlite.mjs"
+import * as sqlite from "/js/sqlite-client.mjs"
 
 export async function create({
     author,

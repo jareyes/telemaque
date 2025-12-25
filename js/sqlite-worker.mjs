@@ -18,8 +18,8 @@ migrate(DATABASE);
 function act(action, options, db) {
     switch(action) {
     case "exec":
-        console.log({
-            event: "DatabaseWorker.ACT",
+        console.debug({
+            event: "SqliteWorker.ACT",
             action,
             db,
             options,
