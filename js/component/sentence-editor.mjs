@@ -46,6 +46,14 @@ class Token {
         // Container for original and translation
         const $container = document.createElement("span");
         $container.classList.add("token");
+        if(this.is_punctuation) {
+            $container.classList.add("punctuation");
+            $container.textContent = this.token;
+            if(this.word.translation === null) {
+                this.word.translation = this.token;
+            }
+            return $container;
+        }
         const $translation = document.createElement("span");
         $translation.classList.add("translation");
         
@@ -61,7 +69,6 @@ class Token {
         $input.addEventListener("input", event => {
             const translation = event.target.value;
             token.word = {translation};
-            console.log("token", token);
         });
         
         // Attach the input

@@ -127,7 +127,7 @@ input[type=text] {
 }
 
 .form-field {
-    margin: 10px 0;
+    margin: 2rem 0;
 }
 .form-field label {
     display: block;
@@ -140,6 +140,7 @@ input[type=text] {
     font-size: 1em;
     margin-bottom: 1rem;
 }
+
 .token {
     display: inline-grid;
     grid-template-rows: auto auto auto;
@@ -147,6 +148,10 @@ input[type=text] {
     vertical-align: bottom;
     margin: 0 8px 0 0;
     align-items: end;
+}
+
+.token:has(+ .token.punctuation) {
+    margin-right: 0;
 }
 
 .translation {
@@ -162,4 +167,7 @@ input[type=text] {
     border-bottom: 2px var(--tm-color-border) solid;
     text-align: center;
     display: block;
+}
+.punctuation input {
+    width: 10px;
 }

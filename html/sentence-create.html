@@ -27,12 +27,12 @@
       <h1 id="text-title"><!-- Filled in --></h1>
       <h2 id="text-author"><!-- Filled in --></h2>
 
-      <section class="hidden" id="section-previous-sentence">
+      <section class="hidden" id="section-sentence-previous">
         <h3>Previous sentence</h3>
         <p id="sentence-previous"><!-- Filled in --></p>
       </section>
 
-      <h3>New sentence</h3>
+      <h3>Next sentence</h3>
       <form id="form-sentence">
         <div id="sentence-editor"></div>
 
@@ -50,6 +50,7 @@
       </form>
     </article>
     <script type="module">
+      import * as Sentence from "/js/sentence.mjs";
       import * as Text from "/js/text.mjs";
       import SentenceEditor from "/js/component/sentence-editor.mjs";
 
@@ -69,6 +70,16 @@
           const $author = document.getElementById("text-author");
           $title.textContent = text.title;
           $author.textContent = text.author;
+
+          const sentence_id = await Sentence.get_last(text_id);
+          if(sentence_id !== null) {
+              const words = await Sentence.get_words(sentence_id);
+              const sentence = words.map(word => word.original).join(" ");
+              const $sentence_previous = document.getElementById("sentence-previous");
+              $sentence_previous.textContent = sentence;
+              const $section = document.getElementById("section-sentence-previous");
+              $section.classList.remove("hidden");
+          }
       }
 
       const query = new URLSearchParams(window.location.search);
