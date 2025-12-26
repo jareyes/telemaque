@@ -31,10 +31,10 @@
       <div id="sentence-original"><!-- Filled in -->
       </div>
 
-      <div class="hidden meta" id="sentence-translation"><!-- Filled in -->
+      <div class="meta" id="sentence-translation"><!-- Filled in -->
       </div>
 
-      <div class="hidden meta" id="sentence-note"><!-- Filled in -->
+      <div class="meta" id="sentence-note"><!-- Filled in -->
       </div>
     </article>
     <script type="module">
@@ -64,15 +64,8 @@
           // but people don't
           $position.textContent = sentence.position + 1;
 
-          if(sentence.translation?.length > 0) {
-              $translation.textContent = sentence.translation;
-              $translation.classList.remove("hidden");
-          }
-
-          if(sentence.note?.length > 0) {
-              $note.textContent = sentence.note;
-              $note.classList.remove("hidden");
-          }
+          $translation.textContent = sentence.translation;          
+          $note.textContent = sentence.note;
       }
       const query = new URLSearchParams(window.location.search);
       const sentence_id = query.get("sentence_id");

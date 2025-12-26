@@ -86,6 +86,28 @@ li:last-child {
     color: var(--tm-color-red);
 }
 
+/* Header */
+header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+header h1 {
+    margin: 0;
+    padding: 0.25rem 0.50rem 0.40rem;
+    font-size: 1rem;
+    font-variant: petite-caps;
+    color: white;
+    background: var(--tm-color-blue);
+}
+header nav {
+    justify-self: end;
+}
+header nav a {
+    display: flex;
+}
+
 /* Mobile adjustments */
 @media (max-width: 600px) {
     body {
@@ -95,4 +117,49 @@ li:last-child {
     h1 {
         font-size: 1.5em;
     }
+}
+
+/* Forms */
+input[type=text] {
+    width: 100%;
+    border: 0;
+    border-bottom: 2px var(--tm-color-border) solid;
+}
+
+.form-field {
+    margin: 10px 0;
+}
+.form-field label {
+    display: block;
+    font-weight: bold;
+}
+
+/* Sentences */
+.sentence-input {
+    width: 100%;
+    font-size: 1em;
+    margin-bottom: 1rem;
+}
+.token {
+    display: inline-grid;
+    grid-template-rows: auto auto auto;
+    text-align: center;
+    vertical-align: bottom;
+    margin: 0 8px 0 0;
+    align-items: end;
+}
+
+.translation {
+    font-size: 0.8em;
+    white-space: nowrap;
+    font-family: sans-seif;                
+}
+
+.translation input {
+    color: var(--tm-color-blue);
+    width: 60px;
+    border: 0;
+    border-bottom: 2px var(--tm-color-border) solid;
+    text-align: center;
+    display: block;
 }

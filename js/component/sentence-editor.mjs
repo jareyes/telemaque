@@ -45,11 +45,28 @@ class Token {
 
         // Container for original and translation
         const $container = document.createElement("span");
-        $container.classList.add("word");
-        
+        $container.classList.add("token");
         const $translation = document.createElement("span");
-        $translation.classList.add("literal");
+        $translation.classList.add("translation");
         
+        // Add a place to type in a new translation
+        const $input = document.createElement("input");
+        $input.type = "text";
+        $input.placeholder = "Translation";
+        
+        // Show the translation of existing words
+        $input.value = this.word?.translation ?? "";
+        
+        // Listen for new translations
+        $input.addEventListener("input", event => {
+            const translation = event.target.value;
+            token.word = {translation};
+            console.log("token", token);
+        });
+        
+        // Attach the input
+        $translation.appendChild($input);
+
         if(this.words.length > 0) {
             const $dropdown = document.createElement("select");
             for(
@@ -74,27 +91,7 @@ class Token {
             });
             $translation.appendChild($dropdown);
         }
-        
-        // Add a place to type in a new translation
-        // TODO: Make this available always for all words
-        // for new usages
-        const $input = document.createElement("input");
-        $input.type = "text";
-        $input.placeholder = "Translation";
-        
-        // Show the translation of existing words
-        $input.value = this.word?.translation ?? "";
-        
-        // Listen for new translations
-        $input.addEventListener("input", event => {
-            const translation = event.target.value;
-            token.word = {translation};
-            console.log("token", token);
-        });
-        
-        // Attach the input
-        $translation.appendChild($input);
-        
+                
         const $original = document.createElement("span");
         $original.classList.add("base");
         $original.textContent = this.token;
@@ -139,6 +136,7 @@ export default class SentenceEditor {
             "input",
         );
         $sentence_input.type = "text";
+        $sentence_input.classList.add("sentence-input");
         $sentence_input.placeholder = "Type the next sentence";
         $sentence_input.addEventListener(
             "input",

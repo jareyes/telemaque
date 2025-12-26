@@ -19,17 +19,18 @@
       </nav>
     </header>
     <article>
-      <h1 id="text-title"><!-- Filled in --></h1>
-      <h2 id="text-author"><!-- Filled in --></h2>
+      <h1 id="text-title"><!-- filled in -->
+      </h1>
+      <h2 id="text-author"><!-- filled in -->
+      </h2>
       <a id="sentence-link" href="#">Add sentence
       </a>
-      <p id="text-description"><!-- Filled in -->
+      <p id="text-description"><!-- filled in -->
       </p>
+      <a class="meta" id="sentence-last"><!-- filled in -->
+      </a>
     </article>
     <script type="module">
-      console.log("Full URL:", window.location.href);
-console.log("Search string:", window.location.search);
-console.log("Query object:", new URLSearchParams(window.location.search));
       import * as Text from "/js/text.mjs";
       import * as Sentence from "/js/sentence.mjs";
 
@@ -53,19 +54,23 @@ console.log("Query object:", new URLSearchParams(window.location.search));
           $author.textContent = text.author;
           $description.textContent = text.description;
 
-          const $sentence_link = document.getElementById("sentence-link");
-          $sentence_link.href = `/html/sentence-create?text_id=${text_id}`;
+          const $sentence_add_link = document.getElementById("sentence-link");
+          $sentence_add_link.href = `/html/sentence-create?text_id=${text_id}`;
           
           // Make the page title pretty, too
           document.title = `${text.title} | Telemaque`;
           
-          console.log({
+          console.debug({
               event: "TextDetail.LOAD",
               text,
           });
-      }
 
-      async function load_sentence(text_id) {
+          const sentence_id = await Sentence.get_last(text_id);
+          const words = await Sentence.get_words(sentence_id);
+          const sentence = words.map(word => word.original).join(" ");
+          const $sentence_link = document.getElementById("sentence-last");
+          $sentence_link.textContent = sentence;
+          $sentence_link.href = `/html/sentence-detail?sentence_id=${sentence_id}`;
       }
       
       const query = new URLSearchParams(window.location.search);

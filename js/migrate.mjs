@@ -58,10 +58,12 @@ export default function migrate(sqlite) {
     // Create migration table
     sqlite.exec({sql: CREATE_MIGRATION_TABLE});
     for(
-        let migration_id = 0;
-        migration_id < MIGRATIONS.length;
-        migration_id++
+        let i = 0;
+        i < MIGRATIONS.length;
+        i++
     ) {
+        // Row IDs start at 1
+        const migration_id = i + 1; 
         if(already_applied(sqlite, migration_id)) {
             console.debug({
                 event: "Migrate.SKIP",
@@ -69,7 +71,7 @@ export default function migrate(sqlite) {
             });
             continue;
         }
-        const sql = MIGRATIONS[migration_id];
+        const sql = MIGRATIONS[i];
         sqlite.exec({sql});
         sqlite.exec({
             sql: `INSERT INTO migrations (migration_id)

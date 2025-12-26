@@ -72,3 +72,16 @@ export async function place({
         ],
     });
 }
+
+export async function get_last(text_id) {
+    const rows = await sqlite.exec({
+        sql: `SELECT MAX(sentence_id) AS sentence_id
+              FROM sentences
+              WHERE text_id = ?`,
+        parameters: [text_id],
+    });
+    if(rows.length < 1) {
+        return null;
+    }
+    return rows[0].sentence_id;
+}
