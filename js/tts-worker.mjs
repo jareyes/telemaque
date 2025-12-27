@@ -1,5 +1,6 @@
-// tts-worker.mjs
-import * as ort from 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.18.0/dist/esm/ort.min.js';
+// TODO: Clean this mess up. (Yes, Claude did write it)
+//import * as ort from 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.18.0/dist/esm/ort.min.js';
+import * as ort from "/vendor/onnxruntime-web@1.18.0/ort.min.js";
 import createPiperPhonemize from "/vendor/piper-phonemize/piper_phonemize.js";
 
 console.log("Initializing TTS worker");
