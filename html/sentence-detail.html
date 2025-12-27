@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="/css/style.css">
     <title>Add Sentence | Telemaque</title>
   </head>
-  
+
   <body>
     <header class="header">
       <h1>Telemaque</h1>
@@ -19,58 +19,73 @@
       </nav>
     </header>
     <article>
-      <h1 id="text-title"><!-- Filled in --></h1>
-      <h2 id="text-author"><!-- Filled in --></h2>
-      <a class="hidden" id="link-sentence-previous" href="#">Previous</a>
-      <a class="hidden" id="link-sentence-next" href="#">Next</a>
+      <header class="subheader">
+        <h1 id="text-title"><!-- Filled in --></h1>
+        <h2 class="meta" id="text-author"><!-- Filled in --></h2>
+        <nav>
+          <a class="hidden" id="link-sentence-previous" href="#">Previous</a>
+          <a class="hidden" id="link-sentence-next" href="#">Next</a>
+        </nav>
+      </header>
 
-      <span class="meta">Sentence #<span id="sentence-position"><!-- Filled in -->
+      <p class="meta">Sentence <span id="sentence-position"><!-- Filled in -->
         </span>
-      </span>
+      </p>
 
+      <button class="play-button invisible" id="sentence-play-button">
+        <img src="/img/play-circle-48dp.svg">
+        Play
+      </button>
       <div id="sentence-original"><!-- Filled in -->
       </div>
 
-      <div class="meta" id="sentence-translation"><!-- Filled in -->
-      </div>
+      <section class="meta labeled section">
+        <span class="label">Translation</span>
+        <p id="sentence-translation"><!-- filled in -->
+        </p>
+      </section>
 
-      <div class="meta" id="sentence-note"><!-- Filled in -->
-      </div>
+      <section class="meta labeled section">
+        <span class="label">Note</span>
+        <p id="sentence-note"><!-- filled in -->
+        </p>
+      </section>
     </article>
     <script type="module">
-      import * as Text from "/js/text.mjs";
-      import * as Sentence from "/js/sentence.mjs";
+      import Text from "/js/text.mjs";
+      import Sentence from "/js/sentence.mjs";
+      import Speech from "/js/speech-client.mjs";
 
-      async function load_sentence(sentence_id) {
-          const sentence = await Sentence.get(sentence_id);
-          const text = await Text.get(sentence.text_id);
-
-          // Fill in the blanks
-          const $author = document.getElementById("text-author");
-          const $title = document.getElementById("text-title");
-          $author.textContent = text.author;
-          $title.textContent = text.title;
-
-          const $position = document.getElementById("sentence-position");
-          const $original = document.getElementById("sentence-original");
-          const $translation = document.getElementById("sentence-translation");
-          const $note = document.getElementById("sentence-note");
-
-          const words = await Sentence.get_words(sentence_id);
-          const original = words.map(word => word.original).join(" ");
-          $original.textContent = original;
-
-          // We start counting at zero internally,
-          // but people don't
-          $position.textContent = sentence.position + 1;
-
-          $translation.textContent = sentence.translation;          
-          $note.textContent = sentence.note;
-      }
       const query = new URLSearchParams(window.location.search);
       const sentence_id = query.get("sentence_id");
-      await load_sentence(sentence_id);
+      const sentence = await Sentence.get(sentence_id);
+      const text = await Text.get(sentence.text_id);
+
+      // Fill in the blanks
+      const $author = document.getElementById("text-author");
+      const $title = document.getElementById("text-title");
+      $author.textContent = text.author;
+      $title.textContent = text.title;
+
+      const $original = document.getElementById("sentence-original");
+      const $position = document.getElementById("sentence-position");
+      const $note = document.getElementById("sentence-note");
+      const $translation = document.getElementById("sentence-translation");
+
+      // We start counting at zero internally,
+      // but people don't
+      $position.textContent = sentence.position + 1;
+      $original.textContent = sentence.original;
+      $note.textContent = sentence.note;
+      $translation.textContent = sentence.translation;
+
+      // Attach audio to the play button
+      const audio = await Speech.audio(sentence.original);
+      const $play_button = document.getElementById("sentence-play-button");
+      $play_button.classList.remove("invisible");
+      $play_button.addEventListener("click", async () => {
+          await audio.play();
+      });
     </script>
   </body>
 </html>
-

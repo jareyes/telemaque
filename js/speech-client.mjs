@@ -1,5 +1,5 @@
 const TIMEOUT_MS = 30000;
-const WORKER_URL = "/js/tts-worker.mjs";
+const WORKER_URL = "/js/speech-worker.mjs";
 
 const pending_messages = new Map();
 const queued_messages = [];
@@ -18,6 +18,9 @@ function receive_message(event) {
         for(const message of queued_messages) {
             worker.postMessage(message);
         }
+        console.log({
+            event: "SpeechClient.READY"
+        });
         return;
     }
 
@@ -88,3 +91,8 @@ export async function audio(text, language="it-IT") {
     });
     return audio;
 }
+
+export default {
+    audio,
+    speak,
+};

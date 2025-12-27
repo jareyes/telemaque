@@ -130,6 +130,21 @@ li:last-child {
 .labeled p {
     display: inline;
 }
+.section {
+    margin: 1rem 0;
+}
+
+/* Play button */
+.play-button {
+    background: none;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.play-button:hover {
+    color: var(--tm-color-blue);
+}
 
 /* Mobile adjustments */
 @media (max-width: 600px) {

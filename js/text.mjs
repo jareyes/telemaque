@@ -41,3 +41,10 @@ export async function sentence_count(text_id) {
     });
     return rows[0]?.count ?? null;
 }
+
+export default {
+    create,
+    get,
+    list,
+    sentence_count,
+};

@@ -58,3 +58,11 @@ export async function list(prefix) {
     });
     return rows;
 }
+
+export default {
+    add,
+    create,
+    find,
+    get,
+    list,
+};

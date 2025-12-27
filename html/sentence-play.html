@@ -41,19 +41,19 @@
       </button>
     </article>
     <script type="module">
-      import * as Sentence from "/js/sentnece.mjs";
-      import * as Speech from "/js/tts-client.mjs";
+      import Sentence from "/js/sentence.mjs";
+      import Speech from "/js/speech-client.mjs";
 
-      const query = new URLSearchParams(window.location.serach);
-      const sentence-Id = query.get("sentence_id");
-      const sentence = Sentence.get(sentence_id);
+      const query = new URLSearchParams(window.location.search);
+      const sentence_id = query.get("sentence_id");
+       const sentence = await Sentence.get(sentence_id);
+       const text = sentence.original;
       const $button = document.getElementById("sentence-play-button");
-      const audio = await Speech.audio(text);
-      $button.addEventListener("click", async () => {
-          const text = sentence.original;
-          await audio.play();
-      });
-      audio.play();
+       const audio = await Speech.audio(text);
+       $button.addEventListener("click", async () => {
+           const text = sentence.original;
+           await audio.play();
+       });
     </script>
   </body>
 </html>

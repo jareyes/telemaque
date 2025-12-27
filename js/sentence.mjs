@@ -25,6 +25,19 @@ export async function get(sentence_id) {
     return rows[0] ?? null;
 }
 
+export async function get_last(text_id) {
+    const rows = await sqlite.exec({
+        sql: `SELECT MAX(sentence_id) AS sentence_id
+              FROM sentences
+              WHERE text_id = ?`,
+        parameters: [text_id],
+    });
+    if(rows.length < 1) {
+        return null;
+    }
+    return rows[0].sentence_id;
+}
+
 export async function get_words(sentence_id) {
     const rows = await sqlite.exec({
         sql: `SELECT
@@ -74,15 +87,11 @@ export async function place({
     });
 }
 
-export async function get_last(text_id) {
-    const rows = await sqlite.exec({
-        sql: `SELECT MAX(sentence_id) AS sentence_id
-              FROM sentences
-              WHERE text_id = ?`,
-        parameters: [text_id],
-    });
-    if(rows.length < 1) {
-        return null;
-    }
-    return rows[0].sentence_id;
-}
+export default {
+    create,
+    get,
+    get_last,
+    get_words,
+    list,
+    place,
+};
