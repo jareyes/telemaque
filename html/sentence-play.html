@@ -12,7 +12,7 @@
 
       // Add a button to your HTML
       document.getElementById('speak-button').addEventListener('click', async () => {
-          const audio = await tts.speakAndPlay("In fisica dell'atmosfera e meteorologia l'arcobaleno è un fenomeno ottico atmosferico che produce uno spettro quasi continuo di luce nel cielo quando la luce del Sole attraversa le gocce d'acqua rimaste in sospensione dopo un temporale, o presso una cascata o una fontana.");
+          const audio = await tts.audio("In fisica dell'atmosfera e meteorologia l'arcobaleno è un fenomeno ottico atmosferico che produce uno spettro quasi continuo di luce nel cielo quando la luce del Sole attraversa le gocce d'acqua rimaste in sospensione dopo un temporale, o presso una cascata o una fontana.");
           await audio.play(); // This works because it's in a click handler
       });
     </script>

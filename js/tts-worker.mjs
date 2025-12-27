@@ -2,7 +2,7 @@
 import * as ort from 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.18.0/dist/esm/ort.min.js';
 import createPiperPhonemize from "/vendor/piper-phonemize/piper_phonemize.js";
 
-console.log("Initializing TTS worker...");
+console.log("Initializing TTS worker");
 
 ort.env.wasm.wasmPaths = '/vendor/onnxruntime-web@1.18.0/';
 ort.env.wasm.numThreads = 1;
@@ -16,11 +16,11 @@ async function init() {
     '/vendor/piper-phonemize/voices/it_IT-riccardo-x_low.onnx'
   );
   
-  const configResponse = await fetch('/vendor/piper-phonemize/voices/it_IT-riccardo-x_low.onnx.json');
+    const configResponse = await fetch('/vendor/piper-phonemize/voices/it_IT-riccardo-x_low.onnx.json');
   voiceConfig = await configResponse.json();
-  console.log("Voice config:", voiceConfig);
-  
-  console.log("TTS worker ready!");
+    console.log("Voice config:", voiceConfig);
+    
+    self.postMessage({type: "ready"});
 }
 
 init().catch(console.error);
@@ -98,7 +98,8 @@ function pcm2wav(pcm, channels, sampleRate) {
 }
 
 self.onmessage = async (event) => {
-  const { id, text } = event.data;
+    const {message_id, message, type} = event.data;
+    const {text, language} = message;
   
   try {
     console.log("Synthesizing:", text);
@@ -127,12 +128,13 @@ self.onmessage = async (event) => {
     
     // Send back as transferable ArrayBuffer
     self.postMessage({ 
-      id, 
-      result: wavBuffer
+        message_id,
+        type: "wave",
+        result: wavBuffer
     }, [wavBuffer]);
     
   } catch (error) {
     console.error("Synthesis error:", error);
-    self.postMessage({ id, error: error.message });
+      self.postMessage({message_id, type: "error", result: error.message });
   }
 };
