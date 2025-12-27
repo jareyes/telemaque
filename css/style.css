@@ -87,13 +87,13 @@ li:last-child {
 }
 
 /* Header */
-header {
+.header {
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
 }
-header h1 {
+.header h1 {
     margin: 0;
     padding: 0.25rem 0.50rem 0.40rem;
     font-size: 1rem;
@@ -101,11 +101,34 @@ header h1 {
     color: white;
     background: var(--tm-color-blue);
 }
-header nav {
+.header nav {
     justify-self: end;
 }
-header nav a {
+.header nav a {
     display: flex;
+}
+
+.subheader {
+    margin: 1rem 0;
+}
+.subheader h1, h2 {
+    display: inline;
+}
+.subheader h2 {
+    margin-left: 0.25rem;
+}
+
+/* Labeled paragraphs */
+.labeled .label {
+    display: inline;
+    font-weight: bold;
+}
+.labeled .label:after {
+    content: ":";
+}
+
+.labeled p {
+    display: inline;
 }
 
 /* Mobile adjustments */

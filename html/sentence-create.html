@@ -13,9 +13,9 @@
       }
     </style>
   </head>
-  
+
   <body>
-    <header>
+    <header class="header">
       <h1>Telemaque</h1>
       <nav>
         <a class="nav-back" href="/">
@@ -24,23 +24,35 @@
       </nav>
     </header>
     <article>
-      <h1 id="text-title"><!-- Filled in --></h1>
-      <h2 id="text-author"><!-- Filled in --></h2>
-
-      <section class="hidden" id="section-sentence-previous">
-        <h3>Previous sentence</h3>
-        <p id="sentence-previous"><!-- Filled in --></p>
+      <header class="subheader">
+        <h1 id="text-title"><!-- Filled in --></h1>
+        <h2 class="meta" id="text-author"><!-- Filled in --></h2>
+      </header>
+      <section class="hidden meta labeled" id="section-sentence-previous">
+        <span class="label">Previous sentence</span>
+        <p id="sentence-previous"><!-- Filled in -->
+        </p>
       </section>
 
-      <h3>Next sentence</h3>
+
       <form id="form-sentence">
-        <div id="sentence-editor"></div>
+        <div class="form-field">
+          <label for="original">Enter</label>
+          <input name="original" id="sentence-input" type="text"
+          placeholder="Type new sentence">
+        </div>
 
         <div class="form-field">
-          <label for="translation">Translation</label>
+          <label for="annotation">Annotate</label>
+          <div name="annotation" id="sentence-editor">
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label for="translation">Translate</label>
           <input name="translation" type="text">
         </div>
-        
+
         <div class="form-field">
           <label for="note">Note</label>
           <textarea name="note"></textarea>
@@ -59,13 +71,13 @@
               // Nothing to see here. Go home
               return window.location.href = "/";
           }
-          
+
           const text = await Text.get(text_id);
           if(text === null) {
               // Nothing to see here. Go home
-              return window.location.href = "/"; 
+              return window.location.href = "/";
           }
-          
+
           const $title = document.getElementById("text-title");
           const $author = document.getElementById("text-author");
           $title.textContent = text.title;
@@ -73,10 +85,12 @@
 
           const sentence_id = await Sentence.get_last(text_id);
           if(sentence_id !== null) {
-              const words = await Sentence.get_words(sentence_id);
-              const sentence = words.map(word => word.original).join(" ");
+              const sentence = await Sentence.get(sentence_id);
+              if(sentence.original === null) {
+                  return;
+              }
               const $sentence_previous = document.getElementById("sentence-previous");
-              $sentence_previous.textContent = sentence;
+              $sentence_previous.textContent = sentence.original;
               const $section = document.getElementById("section-sentence-previous");
               $section.classList.remove("hidden");
           }
@@ -88,8 +102,13 @@
       load_text(text_id);
 
       // Add the editor
-      const $container = document.getElementById("sentence-editor");
-      const editor = new SentenceEditor(text_id, $container);
+      const $sentence_input = document.getElementById("sentence-input");
+      const $editor_container = document.getElementById("sentence-editor");
+      const editor = new SentenceEditor(
+          text_id,
+          $sentence_input,
+          $editor_container,
+      );
 
       // Hook up the form
       const $form = document.getElementById("form-sentence");
@@ -97,7 +116,7 @@
           // Don't go to the server. Stay right now
           event.preventDefault();
           const form_data = new FormData($form);
-          const translation = form_data.get("translation");
+          const translation = form_data.get("translation") ?? null;
           const note = form_data.get("note");
           await editor.save(translation, note);
           // Let's add another sentence

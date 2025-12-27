@@ -10,7 +10,7 @@
   </head>
   
   <body>
-    <header>
+    <header class="header">
       <h1>Telemaque</h1>
       <nav>
         <a class="nav-back" href="/">
@@ -66,10 +66,9 @@
           });
 
           const sentence_id = await Sentence.get_last(text_id);
-          const words = await Sentence.get_words(sentence_id);
-          const sentence = words.map(word => word.original).join(" ");
+          const sentence = await Sentence.get(sentence_id);
           const $sentence_link = document.getElementById("sentence-last");
-          $sentence_link.textContent = sentence;
+          $sentence_link.textContent = sentence.original;
           $sentence_link.href = `/html/sentence-detail?sentence_id=${sentence_id}`;
       }
       

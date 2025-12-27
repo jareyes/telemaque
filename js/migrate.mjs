@@ -35,6 +35,8 @@ const MIGRATIONS = [
         position INTEGER NOT NULL,
         is_capitalized INTEGER DEFAULT 0
     )`,
+    // Add original to sentence
+    `ALTER TABLE sentences ADD COLUMN original`,
 ];
 const CREATE_MIGRATION_TABLE = `
 CREATE TABLE IF NOT EXISTS migrations (

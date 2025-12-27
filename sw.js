@@ -13,6 +13,18 @@ const ASSETS = [
     "/js/sqlite-worker.mjs",
     "/js/text.mjs",
     "/js/component/sentence-editor.mjs",
+    "/vendor/onnxruntime-web@1.18.0/ort.min.js",
+    "/vendor/onnxruntime-web@1.18.0/ort-wasm-simd-threaded.wasm",
+    "/vendor/onnxruntime-web@1.18.0/ort-wasm-simd-threaded.worker.js",
+    "/vendor/onnxruntime-web@1.18.0/ort-wasm-simd.wasm",
+    "/vendor/onnxruntime-web@1.18.0/ort-wasm-threaded.wasm",
+    "/vendor/onnxruntime-web@1.18.0/ort-wasm-threaded.worker.js",
+    "/vendor/onnxruntime-web@1.18.0/ort-wasm.wasm",
+    "/vendor/piper-phonemize/piper_phonemize.js",
+    "/vendor/piper-phonemize/piper_phonemize.wasm",
+    "/vendor/piper-phonemize/piper_phonemize.data",
+    "/vendor/piper-phonemize/voices/it_IT-riccardo-x_low.onnx",
+    "/vendor/piper-phonemize/voices/it_IT-riccardo-x_low.onnx.json",
     "/vendor/sqlite-wasm-3510100/jswasm/sqlite3.mjs",
 ];
 

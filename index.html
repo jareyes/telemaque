@@ -10,7 +10,7 @@
   </head>
 
   <body>
-    <header>
+    <header class="header">
       <h1>Telemaque</h1>
       <p class="meta">Status:
         <span id="status">Loading
@@ -83,9 +83,7 @@
       }
 
       await register(navigator.serviceWorker);
-      console.log("registered");
       await list_texts();
-      console.log("listed");
     </script>
   </body>
 </html>

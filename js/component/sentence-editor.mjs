@@ -27,7 +27,7 @@ class Token {
     constructor(token, word, words) {
         this.token = token;
         this.word = word ?? {translation: null};
-        this.words = words;        
+        this.words = words;
         this.normalized = normalize(token);
     }
 
@@ -56,21 +56,21 @@ class Token {
         }
         const $translation = document.createElement("span");
         $translation.classList.add("translation");
-        
+
         // Add a place to type in a new translation
         const $input = document.createElement("input");
         $input.type = "text";
         $input.placeholder = "Translation";
-        
+
         // Show the translation of existing words
         $input.value = this.word?.translation ?? "";
-        
+
         // Listen for new translations
         $input.addEventListener("input", event => {
             const translation = event.target.value;
             token.word = {translation};
         });
-        
+
         // Attach the input
         $translation.appendChild($input);
 
@@ -87,7 +87,7 @@ class Token {
                 $option.textContent = word.translation;
                 $dropdown.appendChild($option);
             }
-            
+
             $dropdown.addEventListener("change", event => {
                 const translation_id = parseInt(event.taget.value);
                 token.word = token.words[translation_id];
@@ -98,17 +98,17 @@ class Token {
             });
             $translation.appendChild($dropdown);
         }
-                
+
         const $original = document.createElement("span");
         $original.classList.add("base");
         $original.textContent = this.token;
-        
+
         $container.appendChild($translation);
         $container.appendChild($original);
-        
+
         return $container;
     }
-    
+
     async save(sentence_id, position) {
         // If word is new, save it first
         if(this.word.word_id === undefined) {
@@ -131,35 +131,23 @@ class Token {
 }
 
 export default class SentenceEditor {
-    constructor(text_id, $container) {
-        this.$container = $container;
-        this.$sentence_input = null;
+    constructor(
+        text_id,
+        $sentence_input,
+        $words_container,
+    ) {
+        this.$sentence_input = $sentence_input;
+        this.$words_container = $words_container;
         this.$tokens = [];
+
         this.text_id = text_id;
         this.word_cache = new Map();
 
-        // Create document elements
-        const $sentence_input = document.createElement(
-            "input",
-        );
-        $sentence_input.type = "text";
-        $sentence_input.classList.add("sentence-input");
-        $sentence_input.placeholder = "Type the next sentence";
         $sentence_input.addEventListener(
             "input",
             () => this.update(),
         );
-
-        const $words_container = document.createElement(
-            "div",
-        );
-
-        // Attach them to the page
-        $container.appendChild($sentence_input);
-        $container.appendChild($words_container);
-
-        this.$sentence_input = $sentence_input;
-        this.$words_container = $words_container;
+        this.update();
     }
 
     async update() {
@@ -192,10 +180,12 @@ export default class SentenceEditor {
         // TODO: Wrap this all in a transaction
         // Save the sentence
         const text_id = this.text_id;
+        const original = this.$sentence_input.value;
         const sentence_position = await Text.sentence_count(text_id);
         const sentence_id = await Sentence.create({
             text_id,
             position: sentence_position,
+            original,
             translation,
             note,
         });

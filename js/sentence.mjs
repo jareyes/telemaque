@@ -2,13 +2,14 @@ import * as sqlite from "/js/sqlite-client.mjs";
 
 export async function create({
     text_id,
+    original,
     position,
     translation = null,
     note = null,
 }) {
     await sqlite.exec({
-        sql: "INSERT INTO sentences (text_id, position, translation, note) VALUES (?, ?, ?, ?)",
-        parameters: [text_id, position, translation, note],
+        sql: "INSERT INTO sentences (text_id, position, original, translation, note) VALUES (?, ?, ?, ?, ?)",
+        parameters: [text_id, position, original, translation, note],
     });
     const rows = await sqlite.exec({
         sql: "SELECT last_insert_rowid() AS sentence_id",

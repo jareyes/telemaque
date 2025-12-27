@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#2980b9">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="stylesheet" href="/css/style.css">
+    <title>Add Sentence | Telemaque</title>
+    <style>
+      article {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+      }
+      #sentence-play-button {
+          background: none;
+          border: none;
+      }
+      #sentence-play-button:hover {
+          color: var(--tm-color-blue);
+      }
+      #sentence-play-button p {
+          font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Telemaque</h1>
+      <nav>
+        <a class="nav-back" href="/">
+          <img src="/img/arrow-back.svg"> Back
+        </a>
+      </nav>
+    </header>
+    <article>
+      <button id="sentence-play-button">
+        <img src="/img/play-circle-48dp.svg">
+        <p>Play</p>
+      </button>
+    </article>
+    <script type="module">
+      import * as Sentence from "/js/sentnece.mjs";
+      import * as Speech from "/js/tts-client.mjs";
+
+      const query = new URLSearchParams(window.location.serach);
+      const sentence-Id = query.get("sentence_id");
+      const sentence = Sentence.get(sentence_id);
+      const $button = document.getElementById("sentence-play-button");
+      const audio = await Speech.audio(text);
+      $button.addEventListener("click", async () => {
+          const text = sentence.original;
+          await audio.play();
+      });
+      audio.play();
+    </script>
+  </body>
+</html>
