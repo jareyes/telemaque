@@ -7,6 +7,12 @@
     <link rel="manifest" href="/manifest.json">
     <link rel="stylesheet" href="/css/style.css">
     <title>Add Sentence | Telemaque</title>
+    <style>
+      #sentence-original {
+          padding: 1rem 2rem;
+          background: var(--tm-color-background);
+      }
+    </style>
   </head>
 
   <body>
@@ -51,6 +57,24 @@
         </p>
       </section>
     </article>
+    <footer class="sentence-footer">
+      <nav>
+        <ul>
+          <li>
+            <a id="link-present" href="#">Read
+            </a>
+          </li>
+          <li>
+            <a id="link-play" href="#">Listen
+            </a>
+          </li>
+          <li>
+            <a id="link-fill" href="#">Write
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </footer>
     <script type="module">
       import Text from "/js/text.mjs";
       import Sentence from "/js/sentence.mjs";
@@ -58,6 +82,17 @@
 
       const query = new URLSearchParams(window.location.search);
       const sentence_id = query.get("sentence_id");
+
+      // Update the footer links
+      const $link_present = document.getElementById("link-present");
+      $link_present.href = `/html/sentence-present?sentence_id=${sentence_id}`;
+
+      const $link_play = document.getElementById("link-play");
+      $link_play.href = `/html/sentence-play?sentence_id=${sentence_id}`;
+
+      const $link_fill = document.getElementById("link-fill");
+      $link_fill.href = `/html/sentence-fill?sentence_id=${sentence_id}`;
+
       const sentence = await Sentence.get(sentence_id);
       const text = await Text.get(sentence.text_id);
 

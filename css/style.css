@@ -8,6 +8,7 @@
 
     /* Property-specific colors */
     --tm-color-border: #e8e8e8;
+    --tm-color-background: #f8f9fa;
 }
 
 /* Base styles */
@@ -208,4 +209,17 @@ input[type=text] {
 }
 .punctuation input {
     width: 10px;
+}
+
+.sentence-footer {
+    border-top: 1px var(--tm-color-border) solid;
+    
+}
+.sentence-footer nav ul {
+    display: flex;
+    justify-content: space-between;
+    font-family: system-ui, -apple-system, sans-serif;
+}
+.sentence-footer nav li {
+    border: none;
 }
