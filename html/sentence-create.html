@@ -62,8 +62,8 @@
       </form>
     </article>
     <script type="module">
-      import * as Sentence from "/js/sentence.mjs";
-      import * as Text from "/js/text.mjs";
+      import Sentence from "/js/sentence.mjs";
+      import Text from "/js/text.mjs";
       import SentenceEditor from "/js/component/sentence-editor.mjs";
 
       async function load_text(text_id) {
@@ -109,6 +109,7 @@
           $sentence_input,
           $editor_container,
       );
+      console.log("editor", editor);
 
       // Hook up the form
       const $form = document.getElementById("form-sentence");

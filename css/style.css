@@ -9,6 +9,7 @@
     /* Property-specific colors */
     --tm-color-border: #e8e8e8;
     --tm-color-background: #f8f9fa;
+    --tm-color-screen: #e9e9ed;
 }
 
 /* Base styles */
@@ -200,12 +201,17 @@ input[type=text] {
 }
 
 .translation input {
-    color: var(--tm-color-blue);
-    width: 60px;
-    border: 0;
+    border: none;
     border-bottom: 2px var(--tm-color-border) solid;
-    text-align: center;
+    color: var(--tm-color-blue);
     display: block;
+    margin-bottom: 2px;
+    text-align: center;
+    width: 60px;
+}
+.translation select {
+    background: var(--tm-color-screen);
+    border: none;
 }
 .punctuation input {
     width: 10px;
@@ -222,4 +228,14 @@ input[type=text] {
 }
 .sentence-footer nav li {
     border: none;
+}
+
+/* Cloze */
+input.cloze {
+    border: none;
+    border-bottom: 1px var(--tm-color-black) solid;
+    background: var(--tm-color-background);
+    color: var(--tm-color-blue);
+    text-align: center;
+    font-size: 0.9rem;
 }

@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#2980b9">
     <link rel="manifest" href="/manifest.json">
     <link rel="stylesheet" href="/css/style.css">
-    <title>Add Sentence | Telemaque</title>
+    <title>Cloze Sentence | Telemaque</title>
     <style>
       article {
           align-items: center;
@@ -14,35 +14,20 @@
           justify-content: center;
           margin: 4rem 0;
       }
-      #sentence-play-button {
-          background: none;
-          border: none;
-      }
-      #sentence-play-button:hover {
-          color: var(--tm-color-blue);
-      }
-      #sentence-play-button p {
-          font-weight: bold;
-          text-align: center;
-          font-family: system-ui, -apple-system, sans-serif;
-          margin: 0;
-          padding: 0;
-      }
     </style>
   </head>
+
   <body>
     <header class="header">
       <h1>Telemaque</h1>
       <nav>
-        <a class="nav-back" href="/">
+        <a id="link-back" href="/">
           <img src="/img/arrow-back.svg"> Back
         </a>
       </nav>
     </header>
     <article>
-      <div id="sentence-play-button">
-        <img src="/img/play-circle-48dp.svg">
-        <p>Play</p>
+      <div id="sentence-cloze"><!-- filled in -->
       </div>
     </article>
     <footer class="sentence-footer">
@@ -65,8 +50,8 @@
     </footer>
     <script type="module">
       import Sentence from "/js/sentence.mjs";
-      import Speech from "/js/speech-client.mjs";
-      
+      import Cloze from "/js/component/cloze.mjs";
+
       const query = new URLSearchParams(window.location.search);
       const sentence_id = query.get("sentence_id");
 
@@ -79,15 +64,16 @@
 
       const $link_cloze = document.getElementById("link-cloze");
       $link_cloze.href = `/html/sentence-cloze?sentence_id=${sentence_id}`;
-       
+
+      // Show the translation
       const sentence = await Sentence.get(sentence_id);
-      const text = sentence.original;
-      const $button = document.getElementById("sentence-play-button");
-       const audio = await Speech.audio(text);
-       $button.addEventListener("click", async () => {
-           const text = sentence.original;
-           await audio.play();
-       });
+      const tokens = await Sentence.get_words(sentence_id);
+      // Choose a word
+      const words = tokens.filter(word => !word.is_punctuation);
+      const choice = Math.trunc(words.length * Math.random());
+      const $cloze = document.getElementById("sentence-cloze");
+      const cloze = new Cloze(sentence, words[choice], $cloze);
+      cloze.render();
     </script>
   </body>
 </html>

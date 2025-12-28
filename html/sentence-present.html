@@ -42,7 +42,7 @@
             </a>
           </li>
           <li>
-            <a id="link-fill" href="#">Write
+            <a id="link-cloze" href="#">Write
             </a>
           </li>
         </ul>
@@ -61,8 +61,8 @@
       const $link_play = document.getElementById("link-play");
       $link_play.href = `/html/sentence-play?sentence_id=${sentence_id}`;
 
-      const $link_fill = document.getElementById("link-fill");
-      $link_fill.href = `/html/sentence-fill?sentence_id=${sentence_id}`;
+      const $link_cloze = document.getElementById("link-cloze");
+      $link_cloze.href = `/html/sentence-cloze?sentence_id=${sentence_id}`;
 
       // Show the translation
       const sentence = await Sentence.get(sentence_id);

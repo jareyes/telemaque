@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#2980b9">
     <link rel="manifest" href="/manifest.json">
     <link rel="stylesheet" href="/css/style.css">
-    <title>Add Sentence | Telemaque</title>
+    <title>Telemaque</title>
     <style>
       #sentence-original {
           padding: 1rem 2rem;
@@ -69,7 +69,7 @@
             </a>
           </li>
           <li>
-            <a id="link-fill" href="#">Write
+            <a id="link-cloze" href="#">Write
             </a>
           </li>
         </ul>
@@ -90,8 +90,8 @@
       const $link_play = document.getElementById("link-play");
       $link_play.href = `/html/sentence-play?sentence_id=${sentence_id}`;
 
-      const $link_fill = document.getElementById("link-fill");
-      $link_fill.href = `/html/sentence-fill?sentence_id=${sentence_id}`;
+      const $link_cloze = document.getElementById("link-cloze");
+      $link_cloze.href = `/html/sentence-cloze?sentence_id=${sentence_id}`;
 
       const sentence = await Sentence.get(sentence_id);
       const text = await Text.get(sentence.text_id);
