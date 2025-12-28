@@ -3,16 +3,26 @@ const ASSETS = [
     "/",
     "/manifest.json",
     "/css/style.css",
+    "/html/sentence-cloze",
+    "/html/sentence-create",
+    "/html/sentence-detail",
+    "/html/sentence-play",
+    "/html/sentence-present",
     "/html/text-create",
     "/html/text-detail",
     "/html/text-update",
     "/img/arrow-back.svg",
     "/js/migrate.mjs",
     "/js/sentence.mjs",
+    "/js/speech-client.mjs",
+    "/js/speech-worker.mjs",
     "/js/sqlite-client.mjs",
     "/js/sqlite-worker.mjs",
     "/js/text.mjs",
+    "/js/word.mjs",
+    "/js/component/cloze.mjs",
     "/js/component/sentence-editor.mjs",
+    "/js/component/token.mjs",
     "/vendor/onnxruntime-web@1.18.0/ort.min.js",
     "/vendor/onnxruntime-web@1.18.0/ort-wasm-simd-threaded.wasm",
     "/vendor/onnxruntime-web@1.18.0/ort-wasm-simd-threaded.worker.js",
@@ -26,6 +36,8 @@ const ASSETS = [
     "/vendor/piper-phonemize/voices/it_IT-riccardo-x_low.onnx",
     "/vendor/piper-phonemize/voices/it_IT-riccardo-x_low.onnx.json",
     "/vendor/sqlite-wasm-3510100/jswasm/sqlite3.mjs",
+    "/vendor/sqlite-wasm-3510100/jswasm/sqlite3.wasm",
+    "/vendor/sqlite-wasm-3510100/jswasm/sqlite3-opfs-async-proxy.js",
 ];
 
 async function cleanup(current_name) {
@@ -91,6 +103,6 @@ self.addEventListener("activate", event => {
 
 // Handle network requests internally
 // TODO: Disabled for development. Put back
-// self.addEventListener("fetch", event => {
-//    event.respondWith(fetch_strategy(event.request));
-//});
+ self.addEventListener("fetch", event => {
+    event.respondWith(fetch_strategy(event.request));
+});
