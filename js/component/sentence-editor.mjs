@@ -1,134 +1,11 @@
-import * as sqlite from "/js/sqlite-client.mjs";
-import * as Sentence from "/js/sentence.mjs";
-import * as Text from "/js/text.mjs";
-import * as Word from "/js/word.mjs";
-
-const BOUNDARY_PATTERN = /(\s+|[.,;:!?"""''«»()—\-]+)/;
-
-function is_punctuation(token) {
-    return BOUNDARY_PATTERN.test(token);
-}
-
-function normalize(token) {
-    return token.toLowerCase();
-}
-
-function tokenize(sentence) {
-    // Split on whitespace and punctuation
-    const tokens = sentence.split(BOUNDARY_PATTERN);
-
-    // Filter out the whitespace
-    return tokens.filter(token =>
-        token.length > 0 && !/^\s+$/.test(token)
-    );
-}
-
-class Token {
-    constructor(token, word, words) {
-        this.token = token;
-        this.word = word ?? {translation: null};
-        this.words = words;
-        this.normalized = normalize(token);
-    }
-
-    get is_capitalized() {
-        return (this.token !== this.normalized);
-    }
-
-    get is_punctuation() {
-        return is_punctuation(this.token);
-    }
-
-    render() {
-        // Capture this to use in event listeners
-        const token = this;
-
-        // Container for original and translation
-        const $container = document.createElement("span");
-        $container.classList.add("token");
-        if(this.is_punctuation) {
-            $container.classList.add("punctuation");
-            $container.textContent = this.token;
-            if(this.word.translation === null) {
-                this.word.translation = this.token;
-            }
-            return $container;
-        }
-        const $translation = document.createElement("span");
-        $translation.classList.add("translation");
-
-        // Add a place to type in a new translation
-        const $input = document.createElement("input");
-        $input.type = "text";
-        $input.placeholder = "Translation";
-
-        // Show the translation of existing words
-        $input.value = this.word?.translation ?? "";
-
-        // Listen for new translations
-        $input.addEventListener("input", event => {
-            const translation = event.target.value;
-            token.word = {translation};
-        });
-
-        // Attach the input
-        $translation.appendChild($input);
-
-        if(this.words.length > 0) {
-            const $dropdown = document.createElement("select");
-            for(
-                let translation_id = 0;
-                translation_id < this.words.length;
-                translation_id++
-            ) {
-                const word = this.words[translation_id];
-                const $option = document.createElement("option");
-                $option.value = translation_id;
-                $option.textContent = word.translation;
-                $dropdown.appendChild($option);
-            }
-
-            $dropdown.addEventListener("change", event => {
-                const translation_id = parseInt(event.taget.value);
-                token.word = token.words[translation_id];
-                console.debug({
-                    event: "Token.UPDATE",
-                    translation: token.word
-                });
-            });
-            $translation.appendChild($dropdown);
-        }
-
-        const $original = document.createElement("span");
-        $original.classList.add("base");
-        $original.textContent = this.token;
-
-        $container.appendChild($translation);
-        $container.appendChild($original);
-
-        return $container;
-    }
-
-    async save(sentence_id, position) {
-        // If word is new, save it first
-        if(this.word.word_id === undefined) {
-            const word_id = await Word.add({
-                original: this.normalized,
-                translation: this.word.translation,
-                is_punctuation: this.is_punctuation
-            });
-            this.word.word_id = word_id;
-        }
-        // Save sentence/word association
-        const word_id = this.word.word_id;
-        await Sentence.place({
-            sentence_id,
-            word_id,
-            position,
-            is_capitalized: this.is_capitalized,
-        });
-    }
-}
+import Sentence from "/js/sentence.mjs";
+import Text from "/js/text.mjs";
+import {
+    normalize,
+    tokenize,
+    Token,
+} from "/js/component/token.mjs";
+import Word from "/js/word.mjs";
 
 export default class SentenceEditor {
     constructor(
@@ -153,6 +30,7 @@ export default class SentenceEditor {
     async update() {
         const sentence = this.$sentence_input.value;
         const tokens = tokenize(sentence);
+        console.log("sentence", sentence, "tokens", tokens);
 
         // Load words for each token into the cache
         const $tokens = [];
@@ -199,5 +77,3 @@ export default class SentenceEditor {
         return sentence_id;
     }
 }
-
-SentenceEditor.tokenize = tokenize;
