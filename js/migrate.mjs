@@ -37,6 +37,19 @@ const MIGRATIONS = [
     )`,
     // Add original to sentence
     `ALTER TABLE sentences ADD COLUMN original`,
+    // Spaced-repetition reviews
+    `CREATE TABLE IF NOT EXISTS reviews (
+        sentence_id INTEGER PRIMARY KEY,
+        easiness_factor REAL DEFAULT 2.5,
+        -- Time until next review
+        interval_days REAL DEFAULT 1.0,
+        -- Success reviews in a row
+        repetitions INTEGER DEFAULT 0,
+        last_reviewed_at DATETIME,
+        next_review_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        total_attempts INTEGER DEFAULT 0,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+     )`,
 ];
 const CREATE_MIGRATION_TABLE = `
 CREATE TABLE IF NOT EXISTS migrations (
@@ -52,8 +65,7 @@ function already_applied(sqlite, migration_id) {
         returnValue: "resultRows",
         rowMode: "object",
     });
-    const row = rows[0];
-    return row.count > 0;
+    return rows[0]?.count > 0;
 }
 
 export default function migrate(sqlite) {

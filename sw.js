@@ -13,6 +13,7 @@ const ASSETS = [
     "/html/text-update",
     "/img/arrow-back.svg",
     "/js/migrate.mjs",
+    "/js/review.mjs",
     "/js/sentence.mjs",
     "/js/speech-client.mjs",
     "/js/speech-worker.mjs",

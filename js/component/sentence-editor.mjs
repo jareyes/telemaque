@@ -1,3 +1,4 @@
+import Review from "/js/review.mjs";
 import Sentence from "/js/sentence.mjs";
 import Text from "/js/text.mjs";
 import {
@@ -6,6 +7,7 @@ import {
     Token,
 } from "/js/component/token.mjs";
 import Word from "/js/word.mjs";
+
 
 export default class SentenceEditor {
     constructor(
@@ -67,6 +69,9 @@ export default class SentenceEditor {
             translation,
             note,
         });
+
+        // Add to review schedule
+        await Review.create({sentence_id});
 
         // Process them one-by-one
         for(let i = 0; i < this.$tokens.length; i++) {

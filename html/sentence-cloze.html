@@ -14,9 +14,12 @@
           justify-content: center;
           margin: 4rem 0;
       }
-      button[type=submit] {
-          display: block;
-          margin: 2rem 2rem 0 auto;
+      .form-buttons {
+          text-align: right;
+      }
+      button {
+          display: inline;
+          margin-top: 2rem;
           background: var(--tm-color-screen);
           border: none;
           padding: 0.5rem 1rem;
@@ -34,8 +37,16 @@
       </nav>
     </header>
     <article>
-      <div id="sentence-cloze"><!-- filled in -->
-      </div>
+      <form id="cloze-form">
+        <div id="cloze"><!-- filled in -->
+        </div>
+        <div class="form-buttons">
+          <button class="hidden" id="cloze-refresh" type="button" disabled>Again
+          </button>
+          <button id="cloze-submit" type="submit">Check
+          </button>
+        </div>
+      </form>
     </article>
     <footer class="sentence-footer">
       <nav>
@@ -56,31 +67,75 @@
       </nav>
     </footer>
     <script type="module">
-      import Sentence from "/js/sentence.mjs";
       import Cloze from "/js/component/cloze.mjs";
+      import Review from "/js/review.mjs";
+      import Sentence from "/js/sentence.mjs";
+
+      function record_attempts(
+          $refresh_button,
+          $submit_button,
+      ) {
+          return async (attempts) => {
+              // Retire the submission button
+              $submit_button.textContent = "Correct!";
+              $submit_button.disabled = true;
+              $submit_button.type = "button";
+
+              $refresh_button.classList.remove("hidden");
+              $refresh_button.disabled = false;
+              $refresh_button.type = "submit";
+              await Review.record_attempts(
+                  sentence_id,
+                  attempts,
+              );
+              console.log({
+                  event: "Cloze.RECORDED",
+                  sentence_id,
+                  attempts,
+              });
+          };
+      }
+
+      function choose(tokens) {
+          const words = tokens.filter(word => !word.is_punctuation);
+          const choice = Math.trunc(words.length * Math.random());
+          return words[choice];
+      }
 
       const query = new URLSearchParams(window.location.search);
       const sentence_id = query.get("sentence_id");
 
       // Update the footer links
       const $link_present = document.getElementById("link-present");
-      $link_present.href = `/html/sentence-present?sentence_id=${sentence_id}`;
-
       const $link_play = document.getElementById("link-play");
-      $link_play.href = `/html/sentence-play?sentence_id=${sentence_id}`;
-
       const $link_cloze = document.getElementById("link-cloze");
+      $link_present.href = `/html/sentence-present?sentence_id=${sentence_id}`;
+      $link_play.href = `/html/sentence-play?sentence_id=${sentence_id}`;
       $link_cloze.href = `/html/sentence-cloze?sentence_id=${sentence_id}`;
 
       // Show the translation
       const sentence = await Sentence.get(sentence_id);
-      const tokens = await Sentence.get_words(sentence_id);
       // Choose a word
-      const words = tokens.filter(word => !word.is_punctuation);
-      const choice = Math.trunc(words.length * Math.random());
-      const $cloze = document.getElementById("sentence-cloze");
-      const cloze = new Cloze(sentence, words[choice], $cloze);
-      cloze.render();
+      const tokens = await Sentence.get_words(sentence_id);
+      const word = choose(tokens);
+
+      const $form = document.getElementById("cloze-form");
+      const $cloze = document.getElementById("cloze");
+      const $refresh_button = document.getElementById("cloze-refresh");
+      const $submit_button = document.getElementById("cloze-submit");
+      const cloze = new Cloze(
+          sentence,
+          word,
+          $cloze,
+          $form,
+          $refresh_button,
+          $submit_button,
+          record_attempts(
+              $refresh_button,
+              $submit_button,
+          ),
+      );
+      console.log("cloze", cloze);
     </script>
   </body>
 </html>

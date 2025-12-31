@@ -30,24 +30,39 @@ function get_slice(original, word) {
 
 
 export default class Cloze {
-    constructor(sentence, word, $container) {
+    constructor(
+        sentence,
+        word,
+        $container,
+        $form,
+        $refresh_button,
+        $submit_button,
+        on_complete = (attempts) => {},
+    ) {
         this.$container = $container;
+        this.$form = $form;
+        this.$refresh_button = $refresh_button;
+        this.$submit_button = $submit_button;
         this.sentence = sentence;
         this.word = word;
+        this.on_complete = on_complete;
+
+        // Keep track of attempts
+        this.attempts = 0;
+        this.render();
     }
 
     render() {
         const sentence = this.sentence.original;
+        const sentence_id = this.sentence.sentence_id;
         const word = this.word;
         const {start, end} = get_slice(
             sentence,
             this.word,
         );
-        const $form = document.createElement("form");
-        const $submit_button = document.createElement("button");
-        $submit_button.type = "submit";
-        $submit_button.textContent = "Check";
-
+        const $form = this.$form;
+        const $refresh_button = this.$refresh_button;
+        const $submit_button = this.$submit_button;
         const $cloze_input = document.createElement("input");
         $cloze_input.type = "text";
         $cloze_input.classList.add("cloze");
@@ -58,13 +73,21 @@ export default class Cloze {
             $submit_button.disabled = false;
         });
 
-
         $form.addEventListener("submit", (event) => {
             event.preventDefault();
+            // Each submission is an attempt
+            this.attempts++;
+
+            // Shall we play again?
+            if(!$refresh_button.disabled) {
+                window.location.href = `/html/sentence-cloze?sentence_id=${sentence_id}`;
+                return;
+            }
+
             // Can't check again until you change your
             // submission
             $submit_button.disabled = true;
-            
+
             const submission = $cloze_input.
                   value.
                   trim().
@@ -74,28 +97,26 @@ export default class Cloze {
             if(submission === answer) {
                 $cloze_input.classList.add("correct");
                 $cloze_input.classList.remove("incorrect");
-                $cloze_input.disabled = true;
-                $submit_button.textContent = "Correct!";
+
+                $cloze_input.readOnly = true;
+                this.on_complete(this.attempts);
                 return;
             }
             // They got it wrong
             $cloze_input.classList.add("incorrect");
             $cloze_input.classList.remove("correct");
         });
-        
-        const $left = document.createElement("span");
-        $left.textContent = sentence.slice(0, start);
 
+        const $left = document.createElement("span");
         const $right = document.createElement("span");
+        $left.textContent = sentence.slice(0, start);
         $right.textContent = sentence.slice(end);
 
-        $form.append(
+        this.$container.replaceChildren(
             $left,
             $cloze_input,
             $right,
-            $submit_button,
         );
-        this.$container.replaceChildren($form);
         // Move focus to input
         $cloze_input.focus();
     }

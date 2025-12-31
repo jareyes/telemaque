@@ -89,4 +89,7 @@ export function exec(options) {
     return send_message("exec", {options});
 }
 
+export default {
+    exec,
+};
 
