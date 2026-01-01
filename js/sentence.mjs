@@ -1,97 +1,98 @@
-import sqlite from "/js/sqlite-client.mjs";
+import store from "/js/store.mjs";
 
-export async function create({
+const STORE = "sentences";
+
+// TODO: Attach audio to sentence
+
+/* async */ function create({
     text_id,
+    text_position,
     original,
-    position,
-    translation = null,
-    note = null,
+    translation,
+    note,
 }) {
-    await sqlite.exec({
-        sql: "INSERT INTO sentences (text_id, position, original, translation, note) VALUES (?, ?, ?, ?, ?)",
-        parameters: [text_id, position, original, translation, note],
-    });
-    const rows = await sqlite.exec({
-        sql: "SELECT last_insert_rowid() AS sentence_id",
-    });
-    return rows[0].sentence_id;
+    const sentence_id = crypto.randomUUID();
+    const now_ms = Date.now();
+    const sentence = {
+        sentence_id,
+        text_id,
+        text_position,
+        original,
+        translation,
+        note,
+
+        // Set up literal and idiomatic translations
+        words: [],
+        phrases: [],
+
+        // Add spaced repetition review statistics
+        review: {
+            easiness_factor: 2.5,
+            interval_days: 1.0,
+            streak: 0,
+            last_review_ms: -Infinity,
+            // Due immediately
+            next_review_ms: now_ms,
+            total_attempts: 0,
+            total_errors: 0,
+        },
+
+        // Make room to cache audio
+        audio: {},
+        
+        created_ms: now_ms,
+        updated_ms: now_ms,
+    };
+    return store.add(STORE, sentence, "sentence_id");
 }
 
-export async function get(sentence_id) {
-    const rows = await sqlite.exec({
-        sql: "SELECT * FROM sentences WHERE sentence_id = ?",
-        parameters: [sentence_id],
-    });
-    return rows[0] ?? null;
+/* async */ function get(sentence_id) {
+    return store.get(STORE, sentence_id);
 }
 
-export async function get_last(text_id) {
-    const rows = await sqlite.exec({
-        sql: `SELECT MAX(sentence_id) AS sentence_id
-              FROM sentences
-              WHERE text_id = ?`,
-        parameters: [text_id],
-    });
-    if(rows.length < 1) {
-        return null;
-    }
-    return rows[0].sentence_id;
+/* async */ function get_position(
+    text_id,
+    text_position,
+) {
+    return store.index_get(
+        STORE,
+        "text_position",
+        [text_id, text_position],
+    );
 }
 
-export async function get_words(sentence_id) {
-    const rows = await sqlite.exec({
-        sql: `SELECT
-                    w.original,
-                    w.translation,
-                    w.is_punctuation,
-                    sw.is_capitalized,
-                    sw.position
-                  FROM sentence_words sw
-                  JOIN words w
-                    ON sw.word_id = w.word_id
-                  WHERE sw.sentence_id = ?
-                  ORDER BY sw.position ASC`,
-        parameters: [sentence_id],
-    });
-    return rows;
+async function list(text_id) {
+    const sentences = await store.search_index(
+        STORE,
+        "text_id",
+        text_id,
+    );
+    sentences.sort(
+        (x, y) => x.text_position - y.text_position
+    );
+    return sentences;
 }
 
-export async function list(text_id) {
-    const rows = await sqlite.exec({
-        sql: "SELECT * FROM sentences WHERE text_id = ? ORDER BY position",
-        parameters: [text_id],
-    });
-    return rows;
+// TODO: Place literal translation of a particular word
+
+// TODO: Mark idiomatic phrases
+
+/* async */ function remove(sentence_id) {
+    return store.delete(STORE, sentence_id);
 }
 
-export async function place({
-    sentence_id,
-    word_id,
-    position,
-    is_capitalized,
-}) {
-    await sqlite.exec({
-        sql: `INSERT INTO sentence_words (
-                sentence_id,
-                word_id,
-                position,
-                is_capitalized
-              )
-              VALUES (?, ?, ?, ?)`,
-        parameters: [
-            sentence_id,
-            word_id,
-            position,
-            is_capitalized,
-        ],
-    });
+/* async */ function update(sentence) {
+    // TODO: Be more refined about this.
+    // Update original text and translation only, perhaps
+    // TODO: If original gets updated, handle literal
+    // translations
+    return store.update(STORE, sentence_id, sentence);
 }
 
 export default {
-    create,
+    create,    
     get,
-    get_last,
-    get_words,
+    get_position,
     list,
-    place,
+    remove
 };
