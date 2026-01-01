@@ -1,13 +1,12 @@
-import Review from "/js/review.mjs";
+// import Review from "/js/review.mjs";
 import Sentence from "/js/sentence.mjs";
 import Text from "/js/text.mjs";
 import {
     normalize,
     tokenize,
     Token,
-} from "/js/component/token.mjs";
-import Word from "/js/word.mjs";
-
+} from "/js/token.mjs";
+// import Word from "/js/word.mjs";
 
 export default class SentenceEditor {
     constructor(

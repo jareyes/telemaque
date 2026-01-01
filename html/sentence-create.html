@@ -70,8 +70,8 @@
     </article>
     <script type="module">
       import Sentence from "/js/sentence.mjs";
+      import SentenceEditor from "/js/sentence-editor.mjs";
       import Text from "/js/text.mjs";
-      import SentenceEditor from "/js/component/sentence-editor.mjs";
 
       async function load_text(text_id) {
           if(text_id === undefined) {
@@ -90,7 +90,7 @@
           $title.textContent = text.title;
           $author.textContent = text.author;
 
-          const sentence_id = await Sentence.get_last(text_id);
+/*          const sentence_id = await Sentence.get_last(text_id);
           if(sentence_id !== null) {
               const sentence = await Sentence.get(sentence_id);
               if(sentence.original === null) {
@@ -100,7 +100,8 @@
               $sentence_previous.textContent = sentence.original;
               const $section = document.getElementById("section-sentence-previous");
               $section.classList.remove("hidden");
-          }
+              }
+              */
       }
 
       const query = new URLSearchParams(window.location.search);

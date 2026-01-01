@@ -1,5 +1,9 @@
 import indexeddb from "/js/indexeddb.mjs";
 
+const LANGUAGE_STORE = "languages";
+const SENTENCE_STORE = "sentences";
+const TEXT_STORE = "texts";
+
 async function add(name, object, key) {
     const store = await indexeddb.get(name, "readwrite");
     return new Promise((resolve, reject) => {
@@ -74,4 +78,7 @@ export default {
     index_get,
     index_search,
     put,
+    LANGUAGE_STORE,
+    SENTENCE_STORE
+    TEXT_STORE,
 };
