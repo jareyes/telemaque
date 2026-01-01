@@ -1,50 +1,49 @@
-import * as sqlite from "/js/sqlite-client.mjs"
+import store from "/js/store.mjs";
 
-export async function create({
-    author,
+const STORE = "texts";
+
+export /* async */ function create({
     title,
-    description = null,
+    author,
+    language,
+    description,
 }) {
-    await sqlite.exec({
-        sql: `INSERT INTO texts
-                (title, author, description)
-              VALUES (?, ?, ?)`,
-        parameters: [title, author, description],
-    });
-    const rows = await sqlite.exec({
-        sql: "SELECT last_insert_rowid() AS text_id",
-    });
-    return rows[0].text_id;
+    const text_id = crypto.randomUUID();
+    const text = {
+        text_id,
+        title,
+        author,
+        language,
+        description,
+        created_ms: Date.now(),
+        updated_ms: Date.now()
+    };
+    return store.add(STORE, text, "text_id");
 }
 
-export async function get(text_id) {
-    const rows = await sqlite.exec({
-        sql: "SELECT * FROM texts WHERE text_id = ?",
-        parameters: [text_id],
-    });
-    return rows[0] ?? null;
+export /* async */ function get(text_id) {
+    return store.get(STORE, text_id);
 }
 
 export async function list() {
-    const rows = await sqlite.exec({
-        sql: `SELECT * FROM texts
-              ORDER BY created_at DESC`,
-    });
-    return rows;
+    const texts = await store.get_all(STORE);
+    // Sort reverse chronological order
+    texts.sort((x, y) => y.created_ms - x.created_ms);
+    return texts;
 }
 
-export async function sentence_count(text_id) {
-    const rows = await sqlite.exec({
-        sql: `SELECT COUNT(*) AS count FROM sentences
-              WHERE text_id = ?`,
-        parameters: [text_id],
-    });
-    return rows[0]?.count ?? null;
+export /* async */ function remove(text_id) {
+    return store.delete(STORE, text_id);
+}
+
+export /* async */ function update(text) {
+    return store.put(STORE, text);
 }
 
 export default {
     create,
     get,
     list,
-    sentence_count,
+    remove,
+    update
 };

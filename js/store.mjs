@@ -37,6 +37,26 @@ async function get_all(name) {
     });
 }
 
+async function index_get(name, index_name, key) {
+    const store = await indexeddb.get(name);
+    return new Promise((resolve, reject) => {
+        const index = store.index(index_name);
+        const request = index.get(key);
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
+}
+
+async function index_search(name, index_name, key) {
+    const store = await indexeddb.get(name);
+    return new Promise((resolve, reject) => {
+        const index = store.index(index_name);
+        const request = index.getAll(key);
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
+}
+
 async function put(name, object) {
     const store = await indexeddb.get(name, "readwrite");
     return new Promise((resolve, reject) => {
@@ -51,5 +71,7 @@ export default {
     "delete": _delete,
     get,
     get_all,
+    index_get,
+    index_search,
     put,
 };
