@@ -13,7 +13,8 @@ export /* async */ function create({
         text_id,
         title,
         author,
-        language,
+        // TODO: Make language selectable from form
+        language_code: "it",
         description,
         created_ms: Date.now(),
         updated_ms: Date.now()

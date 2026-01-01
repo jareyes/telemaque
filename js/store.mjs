@@ -79,6 +79,6 @@ export default {
     index_search,
     put,
     LANGUAGE_STORE,
-    SENTENCE_STORE
+    SENTENCE_STORE,
     TEXT_STORE,
 };

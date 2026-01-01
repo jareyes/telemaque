@@ -63,7 +63,7 @@ function create_languages(database) {
     });
 }
 
-function install_language(database, language) {
+function install_language(database, transaction, language) {
     const language_code = language.language_code;
     const words_id = `words:${language_code}`;
     if(database.objectStoreNames.contains(words_id)) {
@@ -92,18 +92,11 @@ function install_language(database, language) {
     });
 
     // Install the language
-    const languages_tx = database.transaction(
-        ["languages"],
-        "readwrite",
-    );
-    const languages = languages_tx.objectStore(
-        "languages",
-    );
-    // TODO: How to propogate errors?
+    const languages = transaction.objectStore("languages");
     const request = languages.add(language);
 }
 
-function install_italian(database) {
+function install_italian(database, transaction) {
     const language = {
         language_code: "it",
         language_name: "Italiano",
@@ -115,15 +108,17 @@ function install_italian(database) {
         word_count: 0,
         phrase_count: 0,
     };
-    install_language(database, language);
+    install_language(database, transaction, language);
 }
 
 export function migrate(event) {
     const database = event.target.result;
+    const transaction = event.target.transaction;
+    
     create_texts(database);
     create_sentences(database);
     create_languages(database);
-    install_italian(database);
+    install_italian(database, transaction);
 }
 
 export default {
