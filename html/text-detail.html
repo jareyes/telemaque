@@ -31,9 +31,9 @@
       </a>
     </article>
     <script type="module">
-      import Text from "/js/text.mjs";
       import Sentence from "/js/sentence.mjs";
-
+      import Text from "/js/text.mjs";
+  
       async function load_text(text_id) {
           if(text_id === undefined) {
               // Nothing to see here. Go home
@@ -41,12 +41,11 @@
           }
           
           const text = await Text.get(text_id);
-/*          if(text === null) {
+          if(text === null) {
               // Nothing to see here. Go home
               return window.location.href = "/"; 
           }
-*/
-          console.log("text", text, "text_id", text_id);
+
           const $title = document.getElementById("text-title");
           const $author = document.getElementById("text-author");
           const $description = document.getElementById("text-description");
@@ -65,13 +64,12 @@
               event: "TextDetail.LOAD",
               text,
           });
-/*
-          const sentence_id = await Sentence.get_last(text_id);
-          const sentence = await Sentence.get(sentence_id);
+
+          const sentences = await Sentence.list(text_id);
+          const sentence = sentences[sentences.length-1];
           const $sentence_link = document.getElementById("sentence-last");
           $sentence_link.textContent = sentence.original;
-          $sentence_link.href = `/html/sentence-detail?sentence_id=${sentence_id}`;
-          */
+          $sentence_link.href = `/html/sentence-detail?sentence_id=${sentence.sentence_id}`;
       }
       
       const query = new URLSearchParams(window.location.search);

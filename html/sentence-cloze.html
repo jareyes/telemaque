@@ -68,7 +68,6 @@
     </footer>
     <script type="module">
       import Cloze from "/js/component/cloze.mjs";
-      import Review from "/js/review.mjs";
       import Sentence from "/js/sentence.mjs";
 
       function record_attempts(
@@ -84,7 +83,7 @@
               $refresh_button.classList.remove("hidden");
               $refresh_button.disabled = false;
               $refresh_button.type = "submit";
-              await Review.record_attempts(
+              await Sentence.record_attempts(
                   sentence_id,
                   attempts,
               );
@@ -96,9 +95,9 @@
           };
       }
 
-      function choose(tokens) {
-          const words = tokens.filter(word => !word.is_punctuation);
-          const choice = Math.trunc(words.length * Math.random());
+      function choose(words) {
+          const r = Math.random();
+          const choice = Math.floor(n * words.length);
           return words[choice];
       }
 
@@ -115,9 +114,7 @@
 
       // Show the translation
       const sentence = await Sentence.get(sentence_id);
-      // Choose a word
-      const tokens = await Sentence.get_words(sentence_id);
-      const word = choose(tokens);
+      const word = choose(sentence.words);
 
       const $form = document.getElementById("cloze-form");
       const $cloze = document.getElementById("cloze");

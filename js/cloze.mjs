@@ -15,7 +15,7 @@ function get_slice(original, word) {
     for(let i = 0; i < tokens.length; i++) {
         const token = tokens[i];
         if(!is_whitespace(token)) {
-            if(position === word.position) {
+            if(position === word.sentence_position) {
                 // We're here! Note the character index
                 const start = idx;
                 const end = idx + token.length;
@@ -27,7 +27,6 @@ function get_slice(original, word) {
     }
     throw RangeError("Token not found");
 }
-
 
 export default class Cloze {
     constructor(
