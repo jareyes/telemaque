@@ -12,13 +12,13 @@ const ASSETS = [
     "/html/text-detail",
     "/html/text-update",
     "/img/arrow-back.svg",
+    "/js/indexeddb.mjs",
     "/js/migrate.mjs",
     "/js/review.mjs",
     "/js/sentence.mjs",
+    "/js/store.mjs",
     "/js/speech-client.mjs",
     "/js/speech-worker.mjs",
-    "/js/sqlite-client.mjs",
-    "/js/sqlite-worker.mjs",
     "/js/text.mjs",
     "/js/word.mjs",
     "/js/component/cloze.mjs",
@@ -36,9 +36,6 @@ const ASSETS = [
     "/vendor/piper-phonemize/piper_phonemize.data",
     "/vendor/piper-phonemize/voices/it_IT-riccardo-x_low.onnx",
     "/vendor/piper-phonemize/voices/it_IT-riccardo-x_low.onnx.json",
-    "/vendor/sqlite-wasm-3510100/jswasm/sqlite3.mjs",
-    "/vendor/sqlite-wasm-3510100/jswasm/sqlite3.wasm",
-    "/vendor/sqlite-wasm-3510100/jswasm/sqlite3-opfs-async-proxy.js",
 ];
 
 async function cleanup(current_name) {

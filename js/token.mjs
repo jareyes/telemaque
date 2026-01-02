@@ -12,38 +12,40 @@ export function is_whitespace(token) {
 }
 
 export function normalize(token) {
-    return token.toLowerCase();
+    return token.trim().toLowerCase();
 }
 
-export function tokenize(sentence, preserve_whitespace=false) {
+export function is_word(token) {
+    return !is_whitespace(token) && !is_punctuation(token);
+}
+
+export function tokenize(
+    sentence,
+    words_only=true
+) {
     // Split on whitespace and punctuation
     let tokens = sentence.split(BOUNDARY_PATTERN);
 
     // Get rid of empty tokens
     tokens = tokens.filter(token => (token.length > 0));
 
-    if(preserve_whitespace) {
+    if(!words_only) {
         return tokens;
     }
 
-    // Filter out the whitespace
-    return tokens.filter(token => !is_whitespace(token));
+    // Keep only words
+    return tokens.filter(is_word);
 }
 
 export class Token {
-    constructor(token, word, words) {
+    constructor(token, word) {
         this.token = token;
-        this.word = word ?? {translation: null};
-        this.words = words;
-        this.normalized = normalize(token);
-    }
+        this.word = word
 
-    get is_capitalized() {
-        return (this.token !== this.normalized);
-    }
-
-    get is_punctuation() {
-        return is_punctuation(this.token);
+        this.selected_translation = word?.
+            translations?.
+            [0]?.
+            translation;
     }
 
     render() {
@@ -53,14 +55,6 @@ export class Token {
         // Container for original and translation
         const $container = document.createElement("span");
         $container.classList.add("token");
-        if(this.is_punctuation) {
-            $container.classList.add("punctuation");
-            $container.textContent = this.token;
-            if(this.word.translation === null) {
-                this.word.translation = this.token;
-            }
-            return $container;
-        }
         const $translation = document.createElement("span");
         $translation.classList.add("translation");
 
@@ -70,41 +64,39 @@ export class Token {
         $input.placeholder = "Translate";
 
         // Show the translation of existing words
-        $input.value = this.word?.translation ?? "";
+        $input.value = token.selected_translation ?? "";
 
         // Listen for new translations
         $input.addEventListener("input", event => {
             const translation = event.target.value;
-            token.word = {translation};
+            token.selected_translation = translation;
         });
 
         // Attach the input
         $translation.appendChild($input);
 
         const $dropdown = document.createElement("select");
-        if(this.words.length < 1) {
+        const translations = token.word?.translations ??
+              [];
+        if(translations.length < 1) {
             $dropdown.disabled = true;
             $dropdown.classList.add("hidden");
         }
-        for(
-            let translation_id = 0;
-            translation_id < this.words.length;
-            translation_id++
-        ) {
-            const word = this.words[translation_id];
+        for(let i = 0; i < translations.length; i++) {
+            const word = translations[i];
             const $option = document.createElement("option");
-            $option.value = translation_id;
+            $option.value = i;
             $option.textContent = word.translation;
             $dropdown.appendChild($option);
         }
         
         $dropdown.addEventListener("input", event => {
-            const translation_id = parseInt(event.target.value);
-            token.word = token.words[translation_id];
-            $input.value = token.word.translation;
+            const idx = parseInt(event.target.value);
+            token.selected_translation = translations[idx].translation;
+            $input.value = token.selected_translation;
             console.debug({
                 event: "Token.UPDATE",
-                translation: token.word
+                translation: token.selected_translation,
             });
         });
         $translation.appendChild($dropdown);
@@ -119,23 +111,31 @@ export class Token {
         return $container;
     }
 
-    async save(sentence_id, position) {
-        // If word is new, save it first
-        if(this.word.word_id === undefined) {
-            const word_id = await Word.add({
-                original: this.normalized,
-                translation: this.word.translation,
-                is_punctuation: this.is_punctuation
-            });
-            this.word.word_id = word_id;
+    async save(
+        language_code,
+        sentence_id,
+        sentence_position,
+        text_id,
+    ) {
+        const translation = this.selected_translation;
+        // If there's no translation, nothing to save
+        if(translation === undefined) {
+            return;
         }
-        // Save sentence/word association
-        const word_id = this.word.word_id;
+        // Save the translation
+        const original = normalize(this.token);
+        const translation_id = await Word.add({
+            original,
+            translation,
+            language_code,
+            text_id,
+        });
+        // Place it in the sentence
         await Sentence.place({
+            original,
             sentence_id,
-            word_id,
-            position,
-            is_capitalized: this.is_capitalized,
+            sentence_position,
+            translation_id,
         });
     }
 }

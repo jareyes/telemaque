@@ -55,20 +55,14 @@
       }
 
       async function list_texts() {
-      const Text = await import("/js/text.mjs");
-      
-      const texts = await Text.list();
-          const $list = document.getElementById("text-list");
+          const Text = await import("/js/text.mjs");
+          const texts = await Text.list();
+
+          const $list = document.getElementById("text-list");          
           for(const text of texts) {
               const $link = document.createElement("a");
               $link.href = `/html/text-detail?text_id=${text.text_id}`;
               $link.textContent = text.title;
-
-                console.debug("Creating link:", {
-                    text_id: text.text_id,
-                    href: $link.href,
-                    fullHref: $link.getAttribute('href')
-                });
 
               const $author = document.createElement("span")
               $author.textContent = ` by ${text.author}`;

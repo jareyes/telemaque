@@ -1,97 +1,186 @@
-import sqlite from "/js/sqlite-client.mjs";
+import store from "/js/store.mjs";
+
+const MS_PER_DAY = 1000 * 60 * 60 * 24;
+const STORE = "sentences";
+
+// TODO: Attach audio to sentence
 
 export async function create({
     text_id,
+    text_position,
     original,
-    position,
-    translation = null,
-    note = null,
+    translation,
+    note,
 }) {
-    await sqlite.exec({
-        sql: "INSERT INTO sentences (text_id, position, original, translation, note) VALUES (?, ?, ?, ?, ?)",
-        parameters: [text_id, position, original, translation, note],
-    });
-    const rows = await sqlite.exec({
-        sql: "SELECT last_insert_rowid() AS sentence_id",
-    });
-    return rows[0].sentence_id;
+    const sentence_id = crypto.randomUUID();
+    const now_ms = Date.now();
+    const sentence = {
+        sentence_id,
+        text_id,
+        text_position,
+        original,
+        translation,
+        note,
+
+        // Set up literal and idiomatic translations
+        words: [],
+        phrases: [],
+
+        // Add spaced repetition review statistics
+        review: {
+            easiness_factor: 2.5,
+            interval_days: 1.0,
+            streak: 0,
+            last_review_ms: -Infinity,
+            // Due immediately
+            next_review_ms: now_ms,
+            total_attempts: 0,
+            total_errors: 0,
+        },
+
+        // Make room to cache audio
+        audio: {},
+        
+        created_ms: now_ms,
+        updated_ms: now_ms,
+    };
+    return store.add(STORE, sentence, "sentence_id");
 }
 
-export async function get(sentence_id) {
-    const rows = await sqlite.exec({
-        sql: "SELECT * FROM sentences WHERE sentence_id = ?",
-        parameters: [sentence_id],
-    });
-    return rows[0] ?? null;
+export /* async */ function get(sentence_id) {
+    return store.get(STORE, sentence_id);
 }
 
-export async function get_last(text_id) {
-    const rows = await sqlite.exec({
-        sql: `SELECT MAX(sentence_id) AS sentence_id
-              FROM sentences
-              WHERE text_id = ?`,
-        parameters: [text_id],
-    });
-    if(rows.length < 1) {
-        return null;
-    }
-    return rows[0].sentence_id;
-}
-
-export async function get_words(sentence_id) {
-    const rows = await sqlite.exec({
-        sql: `SELECT
-                    w.original,
-                    w.translation,
-                    w.is_punctuation,
-                    sw.is_capitalized,
-                    sw.position
-                  FROM sentence_words sw
-                  JOIN words w
-                    ON sw.word_id = w.word_id
-                  WHERE sw.sentence_id = ?
-                  ORDER BY sw.position ASC`,
-        parameters: [sentence_id],
-    });
-    return rows;
+export /* async */ function get_position(
+    text_id,
+    text_position,
+) {
+    return store.index_get(
+        STORE,
+        "text_position",
+        [text_id, text_position],
+    );
 }
 
 export async function list(text_id) {
-    const rows = await sqlite.exec({
-        sql: "SELECT * FROM sentences WHERE text_id = ? ORDER BY position",
-        parameters: [text_id],
-    });
-    return rows;
+    const sentences = await store.index_search(
+        STORE,
+        "text_id",
+        text_id,
+    );
+    sentences.sort(
+        (x, y) => x.text_position - y.text_position
+    );
+    return sentences;
 }
 
+// TODO: Place literal translation of a particular word
 export async function place({
+    original,
     sentence_id,
-    word_id,
-    position,
-    is_capitalized,
+    sentence_position,
+    translation_id,
 }) {
-    await sqlite.exec({
-        sql: `INSERT INTO sentence_words (
-                sentence_id,
-                word_id,
-                position,
-                is_capitalized
-              )
-              VALUES (?, ?, ?, ?)`,
-        parameters: [
-            sentence_id,
-            word_id,
-            position,
-            is_capitalized,
-        ],
+    const sentence = await get(sentence_id);
+    if(sentence === undefined) {
+        throw new RangeError(`Sentence not found: ${sentence_id}`);
+    }
+    // Add the word to the sentence
+    sentence.words.push({
+        original,
+        translation_id,
+        sentence_position,
     });
+    await update(sentence);
+}
+
+// TODO: Mark idiomatic phrases
+
+export async function record_attempts(
+    sentence_id,
+    attempts,
+    now_ms=Date.now(),
+) {
+    const sentence = await get(sentence_id);
+    if (sentence === undefined) {
+        throw new RangeError(`Sentence not found: ${sentence_id}`);
+    }
+    
+    // 1 attempt = perfect (5)
+    // 2 attempts = good (4)
+    // 3 attempts = okay (3)
+    // 4 attempts = hard (2)
+    // 5+ attempts = very hard (1)
+    const quality = Math.max(1, Math.min(5, 6 - attempts));
+    
+    // Update review statistics
+    // https://en.wikipedia.org/wiki/SuperMemo#Description_of_SM-2_algorithm
+    const review = sentence.review;
+    
+    // Update easiness factor
+    const penalty = quality - 5;
+    review.easiness_factor = review.easiness_factor + 
+        (0.1 - penalty * (0.08 + 0.02 * penalty));
+    
+    // Didn't do so hot. Reset the streak
+    if(quality < 3) {
+        review.interval_days = 1;
+        review.streak = 0;
+        review.total_errors++;
+    }
+    else {
+        // We're on a streak
+        review.streak++;
+        const streak = review.streak;
+        const interval = review.interval;
+        const easiness = review.easiness_factor;
+        // Starting out, let's do it again
+        if(streak === 1) {
+            review.interval_days = 1;
+        }
+        // We're on a roll. Give it a break
+        else if(streak === 2) {
+            review.interval_days = 6;
+        }
+        // Review again in a time proporitional to easiness
+        else {
+            review.interval_days = Math.round(
+                interval * easiness
+            );
+        }
+    }
+    
+    // Update timestamps
+    review.last_review_ms = now_ms;
+    review.next_review_ms = now_ms + (
+        review.interval_days * MS_PER_DAY
+    );
+    review.total_attempts += attempts;
+    
+    // Save updated sentence
+    await update(sentence);
+    
+    return review;
+}
+
+export /* async */ function remove(sentence_id) {
+    return store.delete(STORE, sentence_id);
+}
+
+export /* async */ function update(
+    sentence,
+    now_ms=Date.now(),
+) {
+    sentence.updated_ms = now_ms;
+    return store.put(STORE, sentence);
 }
 
 export default {
-    create,
+    create,    
     get,
-    get_last,
-    get_words,
+    get_position,
     list,
     place,
+    record_attempts,
+    remove
 };

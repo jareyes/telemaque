@@ -1,11 +1,12 @@
 import {
-    is_whitespace,
+    is_word,
+    normalize,
     tokenize,
-} from "/js/component/token.mjs";
+} from "/js/token.mjs";
 
 function get_slice(original, word) {
     // Tokenize, but keep the whitespace
-    const tokens = tokenize(original, true);
+    const tokens = tokenize(original, false);
 
     // Starting with the first token position in the
     // sentence
@@ -14,8 +15,8 @@ function get_slice(original, word) {
     let idx = 0;
     for(let i = 0; i < tokens.length; i++) {
         const token = tokens[i];
-        if(!is_whitespace(token)) {
-            if(position === word.position) {
+        if(is_word(token)) {
+            if(position === word.sentence_position) {
                 // We're here! Note the character index
                 const start = idx;
                 const end = idx + token.length;
@@ -27,7 +28,6 @@ function get_slice(original, word) {
     }
     throw RangeError("Token not found");
 }
-
 
 export default class Cloze {
     constructor(
@@ -88,11 +88,9 @@ export default class Cloze {
             // submission
             $submit_button.disabled = true;
 
-            const submission = $cloze_input.
-                  value.
-                  trim().
-                  toLowerCase();
-            const answer = word.original.toLowerCase();
+            const submission = normalize($cloze_input.value);
+   
+            const answer = word.original;
             // They got it right!
             if(submission === answer) {
                 $cloze_input.classList.add("correct");

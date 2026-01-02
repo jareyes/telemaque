@@ -166,6 +166,14 @@ input[type=text] {
     border-bottom: 2px var(--tm-color-border) solid;
 }
 
+textarea {
+    border: 2px var(--tm-color-border) solid;
+    width: 100%;
+    height: 3rem;
+    font-family: system-ui, -apple-system, sans-serif;
+    font-size: 0.85em;
+}
+
 .form-field {
     margin: 2rem 0;
 }

@@ -1,16 +1,15 @@
-import Review from "/js/review.mjs";
 import Sentence from "/js/sentence.mjs";
 import Text from "/js/text.mjs";
 import {
     normalize,
     tokenize,
     Token,
-} from "/js/component/token.mjs";
+} from "/js/token.mjs";
 import Word from "/js/word.mjs";
-
 
 export default class SentenceEditor {
     constructor(
+        language_code,
         text_id,
         $sentence_input,
         $words_container,
@@ -19,6 +18,7 @@ export default class SentenceEditor {
         this.$words_container = $words_container;
         this.$tokens = [];
 
+        this.language_code = language_code;
         this.text_id = text_id;
         this.word_cache = new Map();
 
@@ -40,12 +40,14 @@ export default class SentenceEditor {
             const normalized = normalize(token);
             // Fetch new words
             if(!this.word_cache.has(normalized)) {
-                const words = await Word.find(normalized);
+                const words = await Word.find(
+                    normalized,
+                    this.language_code,
+                );
                 this.word_cache.set(normalized, words);
             }
-            const words = this.word_cache.get(normalized);
-            const word = words[0] ?? null;
-            const $token = new Token(token, word, words);
+            const word = this.word_cache.get(normalized);
+            const $token = new Token(token, word);
             $tokens.push($token);
         }
 
@@ -61,23 +63,29 @@ export default class SentenceEditor {
         // Save the sentence
         const text_id = this.text_id;
         const original = this.$sentence_input.value;
-        const sentence_position = await Text.sentence_count(text_id);
+        const text_position = await Text.next_position(
+            text_id,
+        );
         const sentence_id = await Sentence.create({
             text_id,
-            position: sentence_position,
+            text_position,
             original,
             translation,
             note,
         });
 
-        // Add to review schedule
-        await Review.create({sentence_id});
+        console.log("sentence_id", sentence_id);
 
         // Process them one-by-one
         for(let i = 0; i < this.$tokens.length; i++) {
             const $token = this.$tokens[i];
-            const position = i;
-            await $token.save(sentence_id, position);
+            const sentence_position = i;
+            await $token.save(
+                this.language_code,
+                sentence_id,
+                sentence_position,
+                text_id,
+            );
         }
         return sentence_id;
     }
