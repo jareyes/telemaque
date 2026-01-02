@@ -15,6 +15,7 @@ async function open(
         request.onerror = () => reject(request.error);
         request.onsuccess = () => {
             const database = request.result;
+            DATABASE = database;
             resolve(database);
             console.log({
                 event: "IndexedDb.OPEN",

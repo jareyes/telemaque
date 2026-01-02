@@ -4,7 +4,7 @@ const STORE = "sentences";
 
 // TODO: Attach audio to sentence
 
-/* async */ function create({
+export async function create({
     text_id,
     text_position,
     original,
@@ -46,11 +46,11 @@ const STORE = "sentences";
     return store.add(STORE, sentence, "sentence_id");
 }
 
-/* async */ function get(sentence_id) {
+export /* async */ function get(sentence_id) {
     return store.get(STORE, sentence_id);
 }
 
-/* async */ function get_position(
+export /* async */ function get_position(
     text_id,
     text_position,
 ) {
@@ -61,7 +61,7 @@ const STORE = "sentences";
     );
 }
 
-async function list(text_id) {
+export async function list(text_id) {
     const sentences = await store.search_index(
         STORE,
         "text_id",
@@ -74,19 +74,37 @@ async function list(text_id) {
 }
 
 // TODO: Place literal translation of a particular word
+export async function place({
+    original,
+    sentence_id,
+    sentence_position,
+    translation_id,
+}) {
+    const sentence = await get(sentence_id);
+    if(sentence === undefined) {
+        throw new RangeError(`Sentence not found: ${sentence_id}`);
+    }
+    // Add the word to the sentence
+    sentence.words.push({
+        original,
+        translation_id,
+        sentence_position,
+    });
+    await update(sentence);
+}
 
 // TODO: Mark idiomatic phrases
 
-/* async */ function remove(sentence_id) {
+export /* async */ function remove(sentence_id) {
     return store.delete(STORE, sentence_id);
 }
 
-/* async */ function update(sentence) {
-    // TODO: Be more refined about this.
-    // Update original text and translation only, perhaps
-    // TODO: If original gets updated, handle literal
-    // translations
-    return store.update(STORE, sentence_id, sentence);
+export /* async */ function update(
+    sentence,
+    now_ms=Date.now(),
+) {
+    sentence.updated_ms = now_ms;
+    return store.put(STORE, sentence);
 }
 
 export default {
@@ -94,5 +112,6 @@ export default {
     get,
     get_position,
     list,
+    place,
     remove
 };

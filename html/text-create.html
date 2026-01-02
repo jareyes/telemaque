@@ -48,12 +48,13 @@
         const title = form_data.get("title");
         const author = form_data.get("author");
         const description = form_data.get("description")
-        console.log("title", title, "author", author, "description", description);
         // Create the text
         const text_id = await Text.create({
             title,
             author,
             description,
+            // TODO: Make language selectable from form
+            language_code: "it",
         });
         console.log({
             event: "TextCreate.CREATE",
@@ -74,6 +75,5 @@
         const form_data = new FormData($form);
         await create_text(form_data);
     });
-    console.log("ready to form");
   </script>
 </html>

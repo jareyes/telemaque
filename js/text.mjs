@@ -5,7 +5,7 @@ const STORE = "texts";
 export /* async */ function create({
     title,
     author,
-    language,
+    language_code,
     description,
 }) {
     const text_id = crypto.randomUUID();
@@ -33,6 +33,23 @@ export async function list() {
     return texts;
 }
 
+export async function next_position(text_id) {
+    const sentences = await store.index_search(
+        store.SENTENCE_STORE,
+        "text_id",
+        text_id,
+    );
+    if(sentences.length < 1) {
+        return 0;
+    }
+    const max_position = Math.max(
+        ...sentences.map(
+            sentence => sentence.text_position,
+        ),
+    );
+    return max_position + 1;
+}
+
 export /* async */ function remove(text_id) {
     return store.delete(STORE, text_id);
 }
@@ -45,6 +62,7 @@ export default {
     create,
     get,
     list,
+    next_position,
     remove,
     update
 };
