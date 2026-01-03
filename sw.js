@@ -34,6 +34,12 @@ const ASSETS = [
     "/vendor/piper-phonemize/piper_phonemize.js",
     "/vendor/piper-phonemize/piper_phonemize.wasm",
     "/vendor/piper-phonemize/piper_phonemize.data",
+    "/vendor/piper-voices/el/el_GR/rapunzelina/el_GR-rapunzelina-medium.onnx",
+    "/vendor/piper-voices/el/el_GR/rapunzelina/el_GR-rapunzelina-medium.onnx.json",
+    "/vendor/piper-voices/es/es_MX/ald/es_MX-ald-medium.onnx",
+    "/vendor/piper-voices/es/es_MX/ald/es_MX-ald-medium.onnx.json",
+    "/vendor/piper-voices/it/it_IT/riccardo/it_IT-riccardo-x_low.onnx",
+    "/vendor/piper-voices/it/it_IT/riccardo/it_IT-riccardo-x_low.onnx.json",
 ];
 
 async function cleanup(current_name) {
