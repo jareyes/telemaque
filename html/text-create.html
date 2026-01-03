@@ -26,7 +26,7 @@
           <input required name="title" type="text">
         </div>
 
-        <div class="form field form-required">
+        <div class="form-field form-required">
           <label for="language_code">Language</label>
           <select required id="language-dropdown" name="language_code">
           </select>
@@ -64,13 +64,13 @@
         const title = form_data.get("title");
         const author = form_data.get("author");
         const description = form_data.get("description")
+        const language_code = form_data.get("language_code");
         // Create the text
         const text_id = await Text.create({
             title,
             author,
             description,
-            // TODO: Make language selectable from form
-            language_code: "it",
+            language_code,
         });
         console.log({
             event: "TextCreate.CREATE",

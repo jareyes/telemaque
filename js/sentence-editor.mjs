@@ -32,7 +32,6 @@ export default class SentenceEditor {
     async update() {
         const sentence = this.$sentence_input.value;
         const tokens = tokenize(sentence);
-        console.log("sentence", sentence, "tokens", tokens);
 
         // Load words for each token into the cache
         const $tokens = [];
@@ -73,8 +72,6 @@ export default class SentenceEditor {
             translation,
             note,
         });
-
-        console.log("sentence_id", sentence_id);
 
         // Process them one-by-one
         for(let i = 0; i < this.$tokens.length; i++) {

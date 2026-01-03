@@ -1,7 +1,4 @@
 import store from "/js/store.mjs";
-import aesop from "/var/es_aesop.mjs";
-console.log(aesop);
-
 
 const STORE = "texts";
 

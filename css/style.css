@@ -181,7 +181,11 @@ textarea {
     display: block;
     font-weight: bold;
 }
-
+.form-field select {
+    border: none;
+    padding: 0.5rem 2rem;
+    margin-top: 1rem;
+}
 /* Sentences */
 .sentence-input {
     width: 100%;

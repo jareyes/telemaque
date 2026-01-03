@@ -1,6 +1,6 @@
 import es_aesop from "/var/es_aesop.mjs";
 
-export const VERSION = 7;
+export const VERSION = 8;
 
 function create_texts(database) {
     if(database.objectStoreNames.contains("texts")) {
@@ -65,7 +65,11 @@ function create_languages(database) {
     });
 }
 
-function install_language(database, transaction, language) {
+function install_language(
+    database,
+    transaction,
+    language,
+) {
     const language_code = language.language_code;
     // Create words store
     const words_id = `words:${language_code}`;
@@ -100,6 +104,44 @@ function install_language(database, transaction, language) {
         event: "Migrations.INSTALL_LANGUAGE",
         language_code: language.language_code,
     });
+}
+
+function import_text(transaction, module) {
+    // Insert text
+    const {sentences, text, words} = module;
+    const texts_tx = transaction.objectStore("texts");
+    const request = texts_tx.get(text.text_id);
+    request.onsuccess = () => {
+        const existing_text = request.result;
+        if(existing_text) {
+            console.debug({
+                event: "Migrations.TEXT_EXISTS",
+                text_id: text_id,
+            });
+            return;
+        }
+        texts_tx.put(text);
+
+        const sentences_tx = transaction.objectStore("sentences");
+        for(const sentence of sentences) {
+            sentences_tx.put(sentence);
+        }
+
+        const {
+            language_code,
+            text_id,
+        } = text;
+        const words_tx = transaction.objectStore(`words:${language_code}`);
+        for(const word of words) {
+            import_word(words_tx, word, text_id);
+        }
+        console.log({
+            event: "Migrations.IMPORT_TEXT",
+            text,
+            sentence_count: sentences.length,
+            word_count: words.length,
+        });
+    };
 }
 
 function import_word(words_tx, word, text_id) {
@@ -137,31 +179,19 @@ function import_word(words_tx, word, text_id) {
     };
 }
 
-function import_text(transaction, module) {
-    // Insert text
-    const {sentences, text, words} = module;
-    const texts_tx = transaction.objectStore("texts");
-    texts_tx.put(text);
+function install_greek(database, transaction) {
+    const language = {
+        language_code: "el",
+        language_name: "Ελληνικά",
 
-    const sentences_tx = transaction.objectStore("sentences");
-    for(const sentence of sentences) {
-        sentences_tx.put(sentence);
-    }
+        voice_model_filepath: "/vendor/piper-voices/el/el_GR/rapunzelina/el_GR-rapunzelina-medium.onnx",
+        voice_configuration_filepath: "/vendor/piper-voices/el/el_GR/rapunzelina/el_GR-rapunzelina-medium.onnx.json",
 
-    const {
-        language_code,
-        text_id,
-    } = text;
-    const words_tx = transaction.objectStore(`words:${language_code}`);
-    for(const word of words) {
-        import_word(words_tx, word, text_id);
-    }
-    console.log({
-        event: "Migrations.IMPORT_TEXT",
-        text,
-        sentence_count: sentences.length,
-        word_count: words.length,
-    });
+        installed_ms: Date.now(),
+        word_count: 0,
+        phrase_count: 0,
+    };
+    install_language(database, transaction, language);
 }
 
 function install_italian(database, transaction) {
@@ -204,6 +234,7 @@ export function migrate(event) {
     create_languages(database);
     install_italian(database, transaction);
     install_spanish(database, transaction);
+    install_greek(database, transaction);
 }
 
 export default {
