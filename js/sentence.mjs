@@ -1,9 +1,35 @@
+import speech from "/js/speech-client.mjs";
 import store from "/js/store.mjs";
 
 const MS_PER_DAY = 1000 * 60 * 60 * 24;
 const STORE = "sentences";
 
-// TODO: Attach audio to sentence
+export async function get_audio(
+    sentence_id,
+    language_code,
+    now_ms=Date.now(),
+) {
+    const sentence = await get(sentence_id);
+
+    // Grab it off the setence if we can
+    const audio = sentence.audio;
+    if(audio.buffer !== undefined) {
+        return audio.buffer;
+    }
+
+    // Otherwise let's generate it
+    const buffer = await speech.speak(
+        sentence.original,
+        language_code
+    );
+    // Cache it
+    audio.buffer = buffer;
+    audio.created_ms = now_ms;
+    await update(sentence);
+
+    // And send it back
+    return buffer;
+}
 
 export async function create({
     text_id,
@@ -40,7 +66,7 @@ export async function create({
 
         // Make room to cache audio
         audio: {},
-        
+
         created_ms: now_ms,
         updated_ms: now_ms,
     };
@@ -74,7 +100,6 @@ export async function list(text_id) {
     return sentences;
 }
 
-// TODO: Place literal translation of a particular word
 export async function place({
     original,
     sentence_id,
@@ -105,23 +130,23 @@ export async function record_attempts(
     if (sentence === undefined) {
         throw new RangeError(`Sentence not found: ${sentence_id}`);
     }
-    
+
     // 1 attempt = perfect (5)
     // 2 attempts = good (4)
     // 3 attempts = okay (3)
     // 4 attempts = hard (2)
     // 5+ attempts = very hard (1)
     const quality = Math.max(1, Math.min(5, 6 - attempts));
-    
+
     // Update review statistics
     // https://en.wikipedia.org/wiki/SuperMemo#Description_of_SM-2_algorithm
     const review = sentence.review;
-    
+
     // Update easiness factor
     const penalty = quality - 5;
-    review.easiness_factor = review.easiness_factor + 
+    review.easiness_factor = review.easiness_factor +
         (0.1 - penalty * (0.08 + 0.02 * penalty));
-    
+
     // Didn't do so hot. Reset the streak
     if(quality < 3) {
         review.interval_days = 1;
@@ -149,17 +174,17 @@ export async function record_attempts(
             );
         }
     }
-    
+
     // Update timestamps
     review.last_review_ms = now_ms;
     review.next_review_ms = now_ms + (
         review.interval_days * MS_PER_DAY
     );
     review.total_attempts += attempts;
-    
+
     // Save updated sentence
     await update(sentence);
-    
+
     return review;
 }
 
@@ -176,8 +201,9 @@ export /* async */ function update(
 }
 
 export default {
-    create,    
+    create,
     get,
+    get_audio,
     get_position,
     list,
     place,

@@ -106,12 +106,21 @@
       $note.textContent = sentence.note;
       $translation.textContent = sentence.translation;
 
-      // Attach audio to the play button
+      // Attach the audio to the play button
       const language_code = text.language_code;
-      const audio = await Speech.audio(sentence.original, language_code);
+      const buffer = await Sentence.get_audio(sentence_id, language_code);
+      const blob = new Blob(
+          [buffer],
+          {type: "audio/wav"},
+      );
       const $play_button = document.getElementById("sentence-play-button");
       $play_button.classList.remove("invisible");
       $play_button.addEventListener("click", async () => {
+          const audio_url = URL.createObjectURL(blob);
+          const audio = new Audio(audio_url);
+          audio.addEventListener("ended", () => {
+              URL.revokeObjectURL(url);
+          });
           await audio.play();
       });
     </script>

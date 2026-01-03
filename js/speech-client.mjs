@@ -1,4 +1,3 @@
-const TIMEOUT_MS = 30000;
 const WORKER_URL = "/js/speech-worker.mjs";
 
 const pending_messages = new Map();
@@ -54,15 +53,6 @@ function send_message(message, type) {
         else {
             queued_messages.push(payload);
         }
-        setTimeout(
-            () => {
-                if(pending_messages.has(message_id)) {
-                    pending_messages.delete(message_id);
-                    reject(new Error("Timeout"));
-                }
-            },
-            TIMEOUT_MS,
-        );
     });
 }
 
