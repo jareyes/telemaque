@@ -1,15 +1,3 @@
-# Model card for ald (medium)
-
-* Language: es_MX (Spanish, Mexico)
-* Speakers: 1
-* Quality: medium
-* Samplerate: 22,050Hz
-
-## Dataset
-
-* URL: https://huggingface.co/datasets/rmcpantoja/Ald_Mexican_Spanish_speech_dataset
-* License: http://unlicense.org
-
-## Training
-
-Finetuned from Spanish davefx voice (medium quality).
+version https://git-lfs.github.com/spec/v1
+oid sha256:1f0694ceb3f1e78c1e2ee0e2d5da40f19f965bc638e1b4fb4fca9bdca420d713
+size 320
