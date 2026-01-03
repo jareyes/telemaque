@@ -26,9 +26,15 @@
           <input required name="title" type="text">
         </div>
 
-        <div class="form-field form-required">
+        <div class="form field form-required">
+          <label for="language_code">Language</label>
+          <select required id="language-dropdown" name="language_code">
+          </select>
+        </div>
+
+        <div class="form-field">
           <label for="author">Author</label>
-          <input required name="author" type="text">
+          <input name="author" type="text">
         </div>
 
         <div class="form-field">
@@ -42,8 +48,18 @@
   </body>
 
   <script type="module">
-    import * as Text from "/js/text.mjs";
+    import Text from "/js/text.mjs";
+    import Language from "/js/language.mjs";
 
+    const $language_dropdown = document.getElementById("language-dropdown");
+    const languages = await Language.list();
+    for(const language of languages) {
+        const $option = document.createElement("option");
+        $option.textContent = language.language_name;
+        $option.value = language.language_code;
+        $language_dropdown.appendChild($option);
+    }
+    
     async function create_text(form_data) {
         const title = form_data.get("title");
         const author = form_data.get("author");

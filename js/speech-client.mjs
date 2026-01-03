@@ -69,15 +69,15 @@ function send_message(message, type) {
 // @param {string} text - The text to speak
 // @param {string} language - Language code (currently only 'it-IT' supported)
 // @returns {Promise<ArrayBuffer>} - WAV audio data
-export async function speak(text, language="it-IT") {
-    return send_message({text, language});
+export async function speak(text, language_code) {
+    return send_message({text, language_code});
 }
 
 // @param {string} text - The text to speak
 // @param {string} language - Language code
 // @returns {Promise<HTMLAudioElement>} - An audio element
-export async function audio(text, language="it-IT") {
-    const wav_buffer = await speak(text, language);
+export async function audio(text, language_code) {
+    const wav_buffer = await speak(text, language_code);
     const blob = new Blob(
         [wav_buffer],
         {type: "audio/wav"}
