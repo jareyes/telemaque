@@ -66,6 +66,7 @@
     <script type="module">
       import Sentence from "/js/sentence.mjs";
       import Speech from "/js/speech-client.mjs";
+      import Text from "/js/text.mjs";
       
       const query = new URLSearchParams(window.location.search);
       const sentence_id = query.get("sentence_id");
@@ -81,11 +82,11 @@
       $link_cloze.href = `/html/sentence-cloze?sentence_id=${sentence_id}`;
        
       const sentence = await Sentence.get(sentence_id);
+      const {language_code} = await Text.get(sentence.text_id);
       const text = sentence.original;
       const $button = document.getElementById("sentence-play-button");
-       const audio = await Speech.audio(text);
+      const audio = await Speech.audio(text, language_code);
        $button.addEventListener("click", async () => {
-           const text = sentence.original;
            await audio.play();
        });
     </script>
