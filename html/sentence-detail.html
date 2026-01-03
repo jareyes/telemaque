@@ -34,10 +34,6 @@
         </nav>
       </header>
 
-      <p class="meta">Sentence <span id="sentence-position"><!-- Filled in -->
-        </span>
-      </p>
-
       <button class="play-button invisible" id="sentence-play-button">
         <img src="/img/play-circle-48dp.svg">
         Play
@@ -103,13 +99,9 @@
       $title.textContent = text.title;
 
       const $original = document.getElementById("sentence-original");
-      const $position = document.getElementById("sentence-position");
       const $note = document.getElementById("sentence-note");
       const $translation = document.getElementById("sentence-translation");
 
-      // We start counting at zero internally,
-      // but people don't
-      $position.textContent = sentence.position + 1;
       $original.textContent = sentence.original;
       $note.textContent = sentence.note;
       $translation.textContent = sentence.translation;

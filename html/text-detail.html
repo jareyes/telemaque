@@ -7,6 +7,13 @@
     <link rel="manifest" href="/manifest.json">
     <link rel="stylesheet" href="/css/style.css">
     <title>Telemaque</title>
+    <style>
+      .sentence {
+          display: block;
+          margin-bottom: 1rem;
+          text-decoration-color: var(--tm-color-border);
+      }
+    </style>
   </head>
   
   <body>
@@ -25,10 +32,10 @@
       </h2>
       <a id="sentence-link" href="#">Add sentence
       </a>
-      <p id="text-description"><!-- filled in -->
+      <p id="text-description" class="meta"><!-- filled in -->
       </p>
-      <a class="meta" id="sentence-last"><!-- filled in -->
-      </a>
+      <div id="sentences"><!-- filled in -->
+      </div>
     </article>
     <script type="module">
       import Sentence from "/js/sentence.mjs";
@@ -65,11 +72,15 @@
               text,
           });
 
+          const $sentences = document.getElementById("sentences");
           const sentences = await Sentence.list(text_id);
-          const sentence = sentences[sentences.length-1];
-          const $sentence_link = document.getElementById("sentence-last");
-          $sentence_link.textContent = sentence.original;
-          $sentence_link.href = `/html/sentence-detail?sentence_id=${sentence.sentence_id}`;
+          for(const sentence of sentences) {
+              const $sentence_link = document.createElement("a");
+              $sentence_link.classList.add("sentence");
+              $sentence_link.textContent = sentence.original;
+              $sentence_link.href = `/html/sentence-detail?sentence_id=${sentence.sentence_id}`;
+              $sentences.appendChild($sentence_link);
+          }
       }
       
       const query = new URLSearchParams(window.location.search);

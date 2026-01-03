@@ -1,4 +1,4 @@
-export const VERSION = 1;
+export const VERSION = 2;
 
 function create_texts(database) {
     if(database.objectStoreNames.contains("texts")) {
@@ -85,7 +85,7 @@ function install_language(database, transaction, language) {
     database.createObjectStore(
         phrases_id,
         {keyPath: "phrase_id"},
-    );
+   );
     console.log({
         event: "Migrations.CREATE_PHRASES",
         store: phrases_id,
@@ -93,16 +93,31 @@ function install_language(database, transaction, language) {
 
     // Install the language
     const languages = transaction.objectStore("languages");
-    const request = languages.add(language);
+    const request = languages.put(language);
 }
 
 function install_italian(database, transaction) {
     const language = {
         language_code: "it",
         language_name: "Italiano",
-        // Voice model
-        voice_model_filepath: "/vendor/piper-phonemize/voices/it_IT-riccardo-x_low.onnx",
-        voice_configuration_filepath: "/vendor/piper-phonemize/voices/it_IT-riccardo-x_low.onnx.json",
+
+        voice_model_filepath: "/vendor/piper-voices/it/it_IT/it_IT-riccardo-x_low.onnx",
+        voice_configuration_filepath: "/vendor/piper-voices/it/it_IT/it_IT-riccardo-x_low.onnx.json",
+
+        installed_ms: Date.now(),
+        word_count: 0,
+        phrase_count: 0,
+    };
+    install_language(database, transaction, language);
+}
+
+function install_spanish(database, transaction) {
+    const language = {
+        language_code: "es",
+        language_name: "Español",
+
+        voice_model_filepath: "/vendor/piper-voices/es/es_MX/es_MS-ald-medium.onnx",
+        voice_configuration_filepath: "/vendor/piper-voices/es/es_MS/es_MS-ald-medium.onnx.json",
 
         installed_ms: Date.now(),
         word_count: 0,
@@ -119,6 +134,7 @@ export function migrate(event) {
     create_sentences(database);
     create_languages(database);
     install_italian(database, transaction);
+   install_spanish(database, transaction);
 }
 
 export default {
