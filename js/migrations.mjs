@@ -1,6 +1,6 @@
 import es_aesop from "/var/es_aesop.mjs";
 
-export const VERSION = 8;
+export const VERSION = 10;
 
 function create_texts(database) {
     if(database.objectStoreNames.contains("texts")) {
@@ -110,13 +110,14 @@ function import_text(transaction, module) {
     // Insert text
     const {sentences, text, words} = module;
     const texts_tx = transaction.objectStore("texts");
-    const request = texts_tx.get(text.text_id);
+    const text_id = text.text_id;
+    const request = texts_tx.get(text_id);
     request.onsuccess = () => {
         const existing_text = request.result;
         if(existing_text) {
             console.debug({
                 event: "Migrations.TEXT_EXISTS",
-                text_id: text_id,
+                text_id: existing_text.text_id,
             });
             return;
         }
@@ -209,6 +210,20 @@ function install_italian(database, transaction) {
     install_language(database, transaction, language);
 }
 
+function install_norwegian(database, transaction) {
+    const language = {
+        language_code: "no",
+        language_name: "Norsk",
+
+        voice_model_filepath: "/vendor/piper-voices/no/no_NO/talesyntese/no_NO-talesyntese-medium.onnx",
+        voice_configuration_filepath: "/vendor/piper-voices/no/no_NO/talesyntese/no_NO-talesyntese-medium.onnx.json",
+        installed_ms: Date.now(),
+        word_count: 0,
+        phrase_count: 0,
+    };
+    install_language(database, transaction, language);
+}
+
 function install_spanish(database, transaction) {
     const language = {
         language_code: "es",
@@ -235,6 +250,7 @@ export function migrate(event) {
     install_italian(database, transaction);
     install_spanish(database, transaction);
     install_greek(database, transaction);
+    install_norwegian(database, transaction);
 }
 
 export default {

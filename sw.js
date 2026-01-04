@@ -34,12 +34,13 @@ const ASSETS = [
     "/vendor/piper-phonemize/piper_phonemize.js",
     "/vendor/piper-phonemize/piper_phonemize.wasm",
     "/vendor/piper-phonemize/piper_phonemize.data",
-    "/vendor/piper-voices/el/el_GR/rapunzelina/el_GR-rapunzelina-medium.onnx",
+/*    "/vendor/piper-voices/el/el_GR/rapunzelina/el_GR-rapunzelina-medium.onnx",
     "/vendor/piper-voices/el/el_GR/rapunzelina/el_GR-rapunzelina-medium.onnx.json",
     "/vendor/piper-voices/es/es_MX/ald/es_MX-ald-medium.onnx",
     "/vendor/piper-voices/es/es_MX/ald/es_MX-ald-medium.onnx.json",
     "/vendor/piper-voices/it/it_IT/riccardo/it_IT-riccardo-x_low.onnx",
     "/vendor/piper-voices/it/it_IT/riccardo/it_IT-riccardo-x_low.onnx.json",
+    */
 ];
 
 async function cleanup(current_name) {
@@ -64,15 +65,42 @@ async function cleanup(current_name) {
     }
 }
 
-// Intercept network calls. 
+async function update_cache(request) {
+    const response = await fetch(request);
+    if(response.ok) {
+        const cache = await caches.open(CACHES_NAME);    
+        cache.put(request, response.clone());
+        console.debug({
+            event: "SW.UPDATE_CACHE",
+            url: request.url,
+        });
+    }
+    else {
+        console.error({
+            event: "SW.UPDATE_CACHE",
+            url: request.url,
+            status_code: response.status,
+        });
+    }
+    return response;
+}
+
 async function fetch_strategy(request) {
     // Try local storage first
     const cached_response = await caches.match(request);
-    if(cached_response !== undefined) {        
+    const background_update = update_cache(
+        cache,
+        request,
+    );
+    if(cached_response !== undefined) {
+        console.debug({
+            event: "SW.CACHE_HIT",
+            url: request.url,
+        });
         return cached_response;
     }
     // Then go out on the wire
-    const response = fetch(request);
+    const response = await background_update;
     console.debug({
         event: "SW.FETCH",
         url: request.url,
@@ -105,6 +133,6 @@ self.addEventListener("activate", event => {
 
 // Handle network requests internally
 // TODO: Disabled for development. Put back
- self.addEventListener("fetch", event => {
+self.addEventListener("fetch", event => {
     event.respondWith(fetch_strategy(event.request));
 });
