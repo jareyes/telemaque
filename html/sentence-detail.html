@@ -122,7 +122,7 @@
           const audio_url = URL.createObjectURL(blob);
           const audio = new Audio(audio_url);
           audio.addEventListener("ended", () => {
-              URL.revokeObjectURL(url);
+              URL.revokeObjectURL(audio_url);
           });
           await audio.play();
       });
