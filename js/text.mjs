@@ -53,7 +53,11 @@ export /* async */ function remove(text_id) {
     return store.delete(STORE, text_id);
 }
 
-export /* async */ function update(text) {
+export /* async */ function update(
+    text,
+    now_ms=Date.now(),
+) {
+    text.updated_ms = now_ms;
     return store.put(STORE, text);
 }
 

@@ -64,6 +64,9 @@
       const $link_cloze = document.getElementById("link-cloze");
       $link_cloze.href = `/html/sentence-cloze?sentence_id=${sentence_id}`;
 
+      const $link_back = document.getElementById("link-back");
+      $link_back.href = `/html/sentence-detail?sentence_id=${sentence_id}`;
+
       // Show the translation
       const sentence = await Sentence.get(sentence_id);
       const $translation = document.getElementById("sentence-translation");

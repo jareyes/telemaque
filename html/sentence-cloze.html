@@ -114,9 +114,12 @@
       const $link_present = document.getElementById("link-present");
       const $link_play = document.getElementById("link-play");
       const $link_cloze = document.getElementById("link-cloze");
+      const $link_back = document.getElementById("link-back");
+
       $link_present.href = `/html/sentence-present?sentence_id=${sentence_id}`;
       $link_play.href = `/html/sentence-play?sentence_id=${sentence_id}`;
       $link_cloze.href = `/html/sentence-cloze?sentence_id=${sentence_id}`;
+      $link_back.href = `/html/sentence-detail?sentence_id=${sentence_id}`;
 
       // Show the translation
       const sentence = await Sentence.get(sentence_id);

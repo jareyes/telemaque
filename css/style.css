@@ -166,6 +166,13 @@ input[type=text] {
     border-bottom: 2px var(--tm-color-border) solid;
 }
 
+input[type=submit] {
+    background: var(--tm-color-screen);
+    border: none;
+    padding: 0.5rem 1rem;
+    margin-left: auto;
+}
+
 textarea {
     border: 2px var(--tm-color-border) solid;
     width: 100%;

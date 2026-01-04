@@ -92,6 +92,9 @@
       const sentence = await Sentence.get(sentence_id);
       const text = await Text.get(sentence.text_id);
 
+      const $link_back = document.getElementById("link-back");
+      $link_back.href = `/html/text-detail?text_id=${sentence.text_id}`;
+
       // Fill in the blanks
       const $author = document.getElementById("text-author");
       const $title = document.getElementById("text-title");

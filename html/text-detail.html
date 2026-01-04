@@ -13,6 +13,11 @@
           margin-bottom: 1rem;
           text-decoration-color: var(--tm-color-border);
       }
+      .subheader {
+          display: flex;
+          align-items: baseline;
+          justify-content: space-between;
+      }
     </style>
   </head>
   
@@ -26,12 +31,17 @@
       </nav>
     </header>
     <article>
-      <h1 id="text-title"><!-- filled in -->
-      </h1>
-      <h2 id="text-author"><!-- filled in -->
-      </h2>
-      <a id="sentence-link" href="#">Add sentence
-      </a>
+      <header class="subheader">
+        <div>
+          <h1 id="text-title"><!-- filled in -->
+          </h1>
+          <h2 id="text-author"><!-- filled in -->
+          </h2>
+          <a id="edit-link" href="#">Edit</a>
+        </div>
+        <a id="sentence-link" href="#">+ Add sentence
+        </a>
+      </header>
       <p id="text-description" class="meta"><!-- filled in -->
       </p>
       <div id="sentences"><!-- filled in -->
@@ -63,6 +73,8 @@
 
           const $sentence_add_link = document.getElementById("sentence-link");
           $sentence_add_link.href = `/html/sentence-create?text_id=${text_id}`;
+          const $edit_link = document.getElementById("edit-link");
+          $edit_link.href = `/html/text-edit?text_id=${text_id}`;
           
           // Make the page title pretty, too
           document.title = `${text.title} | Telemaque`;

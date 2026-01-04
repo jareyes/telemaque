@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#2980b9">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="stylesheet" href="/css/style.css">
+    <title>Telemaque</title>
+    <style>
+      #input-confirmation {
+          color: var(--tm-color-red);
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="header">
+      <h1>Telemaque</h1>
+      <nav>
+        <a class="nav-back" href="/">
+          <img src="/img/arrow-back.svg"> Back
+        </a>
+      </nav>
+    </header>
+    <article>
+      <h1 id="header-update">Update the text</h1>
+      <section>
+        <form id="form-update">
+          <div class="form-field form-required">
+            <label for="title">Title</label>
+            <input required id="text-title" name="title" type="text">
+          </div>
+
+          <div class="form-field form-required">
+            <label for="language_code">Language</label>
+            <select required id="language-dropdown" name="language_code">
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="author">Author</label>
+            <input name="author" id="text-author" type="text">
+          </div>
+
+          <div class="form-field">
+            <label for="description">Description</label>
+            <textarea id="text-description" name="description"></textarea>
+          </div>
+
+          <input type="submit" value="Update">
+        </form>
+      </section>
+      <section>
+        <h2 id="header-delete">Delete this text</h2>
+        <form id="form-delete">
+          <div class="form-field">
+            <label for="confirmation">To delete this text type "delete"</label>
+            <input name="confirmation" id="input-confirmation" type="text" placeholder="Type delete">
+          </div>
+          <input id="input-delete" disabled type="submit" value="Delete">
+        </form>
+      </section>
+    </article>
+  </body>
+
+  <script type="module">
+    import Text from "/js/text.mjs";
+    import Language from "/js/language.mjs";
+
+    async function update_text(text, form_data) {
+        text.title = form_data.get("title");
+        text.author = form_data.get("author");
+        text.description = form_data.get("description")
+        text.language_code = form_data.get("language_code");
+        const text_id = await Text.update(text);
+        console.log({
+            event: "TextCreate.UDPATE",
+            text,
+        });
+    }
+    // Fill in the form
+    const query = new URLSearchParams(window.location.search);
+    const text_id = query.get("text_id");
+    const text = await Text.get(text_id);
+
+    const $title = document.getElementById("text-title");
+    const $author = document.getElementById("text-author");
+    const $description = document.getElementById("text-description");
+
+    $title.value = text.title;
+    $author.value = text.author;
+    $description.value = text.description
+
+    const $language_dropdown = document.getElementById("language-dropdown");
+    const languages = await Language.list();
+    for(const language of languages) {
+        const $option = document.createElement("option");
+        $option.textContent = language.language_name;
+        $option.value = language.language_code;
+        if(text.language_code == language.language_code) {
+            $option.selected = true;
+        }
+        $language_dropdown.appendChild($option);
+    }
+
+    // Update the headers and title
+    document.title = `Update ${text.title} | Telemaque`;
+
+    const $update_header = document.getElementById("header-update");
+    const $delete_header = document.getElementById("header-delete");
+    $update_header.textContent = `Update ${text.title}`;
+    $delete_header.textContent = `Delete ${text.title}`;
+
+    // Handle update form submissions
+    const $update_form = document.getElementById("form-update");
+    $update_form.addEventListener(
+        "submit",
+        async (event) => {
+            // Don't go to the server. Stay right here
+            event.preventDefault();
+            const form_data = new FormData($update_form);
+            await update_text(text, form_data);
+            // Let's look the new changes
+            window.location.href=`/html/text-detail?text_id=${text_id}`;
+        },
+    );
+
+    // Handle delete form submissions
+    const $confirmation_input = document.getElementById("input-confirmation");
+    const $delete_button = document.getElementById("input-delete");
+    $confirmation_input.addEventListener(
+        "input",
+        event => {
+            const disabled = (
+                $confirmation_input.value !== "delete"
+            );
+            $delete_button.disabled = disabled;
+        },
+    );
+    const $delete_form = document.getElementById("form-delete");
+    $delete_form.addEventListener(
+        "submit",
+        async (event) => {
+            // Don't go to the server. We got you
+            event.preventDefault();
+            await Text.remove(text_id);
+            window.location.href = `/`;
+        },
+    );
+
+  </script>
+</html>

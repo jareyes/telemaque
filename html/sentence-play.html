@@ -34,7 +34,7 @@
     <header class="header">
       <h1>Telemaque</h1>
       <nav>
-        <a class="nav-back" href="/">
+        <a class="nav-back" id="link-back" href="/">
           <img src="/img/arrow-back.svg"> Back
         </a>
       </nav>
@@ -80,6 +80,9 @@
 
       const $link_cloze = document.getElementById("link-cloze");
       $link_cloze.href = `/html/sentence-cloze?sentence_id=${sentence_id}`;
+
+      const $link_back = document.getElementById("link-back");
+      $link_back.href = `/html/sentence-detail?sentence_id=${sentence_id}`;
 
       // Attach the audio to the play button
       const sentence = await Sentence.get(sentence_id);
